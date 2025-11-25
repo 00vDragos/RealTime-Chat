@@ -1,19 +1,16 @@
 # ---- build stage ----
 FROM node:20 AS build
 WORKDIR /app
-
-# install deps (only lockfile + manifest)
 COPY frontend/package*.json ./
 RUN npm ci
-
-# copy source (node_modules excluded by .dockerignore)
 COPY frontend/ .
-
-# build production assets
 RUN npm run build
 
 # ---- runtime stage ----
 FROM nginx:alpine
+# copy SPA build
 COPY --from=build /app/dist /usr/share/nginx/html
+# use custom nginx config with history fallback
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx","-g","daemon off;"]

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCirclePlus } from "lucide-react";
 
-import { contacts } from "./mockData";
+import { contacts } from "../../mockData";
 
 export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: number[]) => void }) {
   const [open, setOpen] = useState(false);
@@ -31,15 +31,19 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Start new chat">
           <MessageCirclePlus className="h-5 w-5" />
         </Button>
       </DialogTrigger>
+
       <DialogContent className="max-w-md">
+
         <DialogHeader>
           <DialogTitle>Start a new chat</DialogTitle>
         </DialogHeader>
+
         <Input
           placeholder="Search contacts..."
           value={search}
@@ -75,6 +79,7 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
             );
           })}
         </div>
+
         <Button
           className="mt-4 w-full"
           disabled={selected.length === 0}
@@ -82,6 +87,7 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
         >
           Start Chat with {selected.length} contact{selected.length !== 1 ? 's' : ''}
         </Button>
+        
       </DialogContent>
     </Dialog>
   );

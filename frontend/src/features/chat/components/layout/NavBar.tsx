@@ -5,6 +5,7 @@ import { MoreVertical, Search, MessageCircle} from 'lucide-react';
 export default function NavBar() {
     return (
         <div className="flex items-center justify-between px-4 py-3 bg-white border-b h-16">
+            
             {/* User Avatar */}
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
@@ -14,6 +15,7 @@ export default function NavBar() {
                 </Avatar>
                 <span className="font-semibold text-gray-800">Username</span>
             </div>
+
             {/* Actions */}
             <div className="flex gap-2">
                 <Button variant="ghost" size="icon">

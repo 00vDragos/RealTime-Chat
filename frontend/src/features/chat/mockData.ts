@@ -4,10 +4,10 @@ export const contacts = [
   { id: 102, name: "Bob Green", avatar: "BG" },
   { id: 103, name: "Charlie Red", avatar: "CR" },
   { id: 104, name: "Diana Yellow", avatar: "DY" },
-  { id: 104, name: "Diana Yellow", avatar: "DY" },
-  { id: 104, name: "Diana Yellow", avatar: "DY" },
-  { id: 104, name: "Diana Yellow", avatar: "DY" },
-  { id: 104, name: "Diana Yellow", avatar: "DY" },
+  { id: 105, name: "Diana Yellow", avatar: "DY" },
+  { id: 106, name: "Diana Yellow", avatar: "DY" },
+  { id: 107, name: "Diana Yellow", avatar: "DY" },
+  { id: 108, name: "Diana Yellow", avatar: "DY" },
 ];
 export type Message = {
   id: number;
@@ -62,6 +62,14 @@ export const chats: Chat[] = [
     messages: [
       { id: 1, text: 'The deadline is next week', sender: 'Team', time: 'Yesterday' },
       { id: 2, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 3, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 4, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 5, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 6, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 7, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 8, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 9, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 10, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
     ],
   },
 ];

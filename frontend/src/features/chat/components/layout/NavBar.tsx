@@ -8,7 +8,7 @@ export default function NavBar() {
             {/* User Avatar */}
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-white">
+                    <AvatarFallback className="bg-[rgb(var(--destructive))] text-white">
                         U
                     </AvatarFallback>
                 </Avatar>

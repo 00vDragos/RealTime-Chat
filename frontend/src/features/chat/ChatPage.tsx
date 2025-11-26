@@ -33,10 +33,10 @@ export default function ChatPage() {
             />
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col bg-[rgb(var(--background))]">
+            <div className="flex-1 flex flex-col bg-[rgb(var(--sidebar))]">
                 <Navbar />
 
-                <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+                <div className="flex-1 flex flex-col p-6 pb-1 overflow-y-auto">
                     {selectedChat ? (
                         <MessagesList
                             messages={selectedChat.messages}

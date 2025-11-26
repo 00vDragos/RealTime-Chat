@@ -25,7 +25,10 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId }: Si
     };
 
     return (
-        <div className="h-screen bg-[rgb(var(--background))] border-r flex flex-col overflow-y-auto" style={{ flexBasis: '25%', minWidth: 280, maxWidth: 400 }}>
+        <div
+            className="h-screen bg-[rgb(var(--background))] border-r flex flex-col overflow-y-auto"
+            style={{ flexBasis: '25%', minWidth: 280, maxWidth: 400 }}
+        >
             {/* Header */}
             <SideBarHeader
                 searchQuery={searchQuery}

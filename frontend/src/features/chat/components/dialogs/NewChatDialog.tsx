@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCirclePlus } from "lucide-react";
 
 import { contacts } from "../../mockData";
@@ -34,11 +35,11 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
 
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Start new chat">
-          <MessageCirclePlus className="h-5 w-5" />
+          <MessageCirclePlus className="h-5 w-5 text-[rgb(var(--muted-foreground))]" />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md bg-[rgb(var(--card))] text-[rgb(var(--card-foreground))]">
 
         <DialogHeader>
           <DialogTitle>Start a new chat</DialogTitle>
@@ -48,40 +49,42 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
           placeholder="Search contacts..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="mb-4"
+          className="mb-4 bg-[rgb(var(--input))] text-[rgb(var(--foreground))] placeholder-[rgb(var(--muted-foreground))] border border-[rgb(var(--border))]"
         />
-        <div className="flex flex-col gap-2 p-2 max-h-60 overflow-y-auto">
-          {filtered.length === 0 && <div className="text-gray-400 text-center">No contacts found</div>}
-          {filtered.map(contact => {
-            const isSelected = selected.includes(contact.id);
-            return (
-              <Button
-                key={contact.id}
-                variant={isSelected ? "secondary" : "ghost"}
-                className={`w-full flex items-center gap-3 justify-start ${isSelected ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-white' : ''}`}
-                onClick={() => toggleSelect(contact.id)}
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  readOnly
-                  className="mr-2 accent-green-500"
-                  tabIndex={-1}
-                  style={{ pointerEvents: 'none' }}
-                />
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-white">
-                    {contact.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="font-medium text-gray-800">{contact.name}</span>
-              </Button>
-            );
-          })}
-        </div>
+        <ScrollArea className="max-h-60">
+          <div className="flex flex-col gap-2 p-2">
+            {filtered.length === 0 && <div className="text-[rgb(var(--muted-foreground))] text-center">No contacts found</div>}
+            {filtered.map(contact => {
+              const isSelected = selected.includes(contact.id);
+              return (
+                <Button
+                  key={contact.id}
+                  variant={isSelected ? "secondary" : "ghost"}
+                  className={`w-full flex items-center gap-3 justify-start ${isSelected ? 'ring-2 ring-[rgb(var(--primary))] ring-offset-2 ring-offset-[rgb(var(--card))]' : ''}`}
+                  onClick={() => toggleSelect(contact.id)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    readOnly
+                    className="mr-2 accent-[rgb(var(--primary))]"
+                    tabIndex={-1}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))]">
+                      {contact.avatar}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-[rgb(var(--foreground))]">{contact.name}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </ScrollArea>
 
         <Button
-          className="mt-4 w-full"
+          className="mt-4 w-full bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] hover:bg-[rgb(var(--primary))]/90"
           disabled={selected.length === 0}
           onClick={handleStartChat}
         >

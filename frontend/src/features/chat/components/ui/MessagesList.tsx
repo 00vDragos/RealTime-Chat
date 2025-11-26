@@ -1,6 +1,7 @@
 
 import MessageBubble from "./MessageBubble";
 import type { Message } from "../../types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type MessagesListProps = {
   messages: Message[];
@@ -9,10 +10,12 @@ type MessagesListProps = {
 
 export default function MessagesList({ messages, onEdit }: MessagesListProps) {
   return (
-    <div className="flex flex-col gap-4">
-      {messages.map((msg) => (
-        <MessageBubble key={msg.id} message={msg} onEdit={onEdit} />
-      ))}
-    </div>
+    <ScrollArea className="w-full h-full" type="always">
+      <div className="flex flex-col gap-4">
+        {messages.map((msg) => (
+          <MessageBubble key={msg.id} message={msg} onEdit={onEdit} />
+        ))}
+      </div>
+    </ScrollArea>
   );
 }

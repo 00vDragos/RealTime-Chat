@@ -13,13 +13,13 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
         <div
             onClick={onClick}
             className={`flex items-center px-4 py-3 cursor-pointer border-b transition-colors
-                ${selected ? 'bg-[rgb(var(--background))]' : ''}
+                ${selected ? 'bg-[rgb(var(--sidebar))]' : ''}
                 hover:bg-[rgb(var(--muted))]`
             }
         >
             {/* Avatar */}
             <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-[rgb(var(--foreground))]">
+                <AvatarFallback className="bg-[rgb(var(--destructive))] text-[rgb(var(--foreground))]">
                     {chat.avatar}
                 </AvatarFallback>
             </Avatar>

@@ -1,6 +1,13 @@
 import { Search, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
 import NewChatDialog from "../dialogs/NewChatDialog";
 import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 
@@ -17,12 +24,26 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
         <h1 className="text-xl font-semibold text-[rgb(var(--foreground))]">Chats</h1>
         <div className="flex gap-2">
           <NewChatDialog onSelect={onStartChat} />
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5 text-[rgb(var(--muted-foreground))]" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <ThemeSwitcher />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive">Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <ThemeSwitcher/>
+
       {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--muted-foreground))] h-4 w-4" />
@@ -31,7 +52,7 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
           placeholder="Search or start new chat"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-[rgb(var(--muted-foreground))] placeholder-[rgb(var(--muted-foreground))]"
         />
       </div>
     </div>

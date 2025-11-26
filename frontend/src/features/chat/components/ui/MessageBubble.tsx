@@ -40,11 +40,11 @@ export default function MessageBubble({ message, onEdit }: MessageBubbleProps) {
         <div
           ref={triggerRef}
           onContextMenu={handleContextMenu}
-          className={`max-w-xs px-4 py-2 rounded-lg shadow text-sm ${message.sender === 'Me' ? 'bg-green-100 self-end' : 'bg-white self-start'}`}
+          className={`max-w-xs px-4 py-2 rounded-lg shadow text-sm ${message.sender === 'Me' ? 'bg-[rgb(var(--primary))]/10 self-end' : 'bg-[rgb(var(--background))] self-start'}`}
         >
-          <div className="font-semibold text-xs text-gray-500 mb-1">{message.sender}</div>
+          <div className="font-semibold text-xs text-[rgb(var(--muted-foreground))] mb-1">{message.sender}</div>
           <div>{message.text}</div>
-          <div className="text-xs text-gray-400 mt-1 text-right">{message.time}</div>
+          <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right">{message.time}</div>
         </div>
       </DropdownMenuTrigger>
 

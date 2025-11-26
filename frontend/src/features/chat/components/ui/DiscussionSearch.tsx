@@ -8,7 +8,7 @@ export function DiscussionSearch() {
 
     return (
          <div className="relative px-4">
-            <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-[rgb(var(--muted-foreground))] h-4 w-4" />
             <Input
               type="text"
               placeholder="Search or start new chat"

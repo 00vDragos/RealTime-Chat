@@ -12,12 +12,14 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
     return (
         <div
             onClick={onClick}
-            className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b transition-colors ${selected ? 'bg-gray-100' : ''}`}
+            className={`flex items-center px-4 py-3 cursor-pointer border-b transition-colors
+                ${selected ? 'bg-[rgb(var(--background))]' : ''}
+                hover:bg-[rgb(var(--muted))]`
+            }
         >
-
             {/* Avatar */}
             <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-white">
+                <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-[rgb(var(--foreground))]">
                     {chat.avatar}
                 </AvatarFallback>
             </Avatar>
@@ -25,19 +27,19 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
             {/* Chat Info */}
             <div className="flex-1 ml-3 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">
+                    <h3 className="font-semibold text-[rgb(var(--foreground))] truncate">
                         {chat.name}
                     </h3>
-                    <span className="text-xs text-gray-500 ml-2">
+                    <span className="text-xs text-[rgb(var(--muted-foreground))] ml-2">
                         {chat.timestamp}
                     </span>
                 </div>
                 <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-600 truncate">
+                    <p className="text-sm text-[rgb(var(--muted-foreground))] truncate">
                         {chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
-                        <Badge className="ml-2 bg-green-500 hover:bg-green-600 text-white">
+                        <Badge className="ml-2 bg-[rgb(var(--primary))] hover:bg-[rgb(var(--primary))]/80 text-[rgb(var(--primary-foreground))]">
                             {chat.unread}
                         </Badge>
                     )}

@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] hover:bg-[rgb(var(--primary))]/90",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-[rgb(var(--destructive))] text-white hover:bg-[rgb(var(--destructive))]/90 focus-visible:ring-[rgb(var(--destructive))]/20 dark:focus-visible:ring-[rgb(var(--destructive))]/40 dark:bg-[rgb(var(--destructive))]/60",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border bg-[rgb(var(--background))] shadow-xs hover:bg-[rgb(var(--accent))] hover:text-[rgb(var(--accent-foreground))] dark:bg-[rgb(var(--input))]/30 dark:border-[rgb(var(--input))] dark:hover:bg-[rgb(var(--input))]/50",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-[rgb(var(--secondary))] text-[rgb(var(--secondary-foreground))] hover:bg-[rgb(var(--secondary))]/80",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "hover:bg-[rgb(var(--accent))] hover:text-[rgb(var(--accent-foreground))] dark:hover:bg-[rgb(var(--accent))]/50",
+        link: "text-[rgb(var(--primary))] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

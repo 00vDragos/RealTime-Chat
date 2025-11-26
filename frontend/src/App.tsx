@@ -1,16 +1,22 @@
+
+
 import './App.css';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import routes from './routes';
+import { ThemeProvider } from './theme/ThemeProvider';
 
 function AppRoutes() {
   return useRoutes(routes);
 }
 
-function App() { 
+
+function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

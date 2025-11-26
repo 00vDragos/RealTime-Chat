@@ -1,10 +1,10 @@
 import type { RouteObject } from 'react-router-dom';
 import AuthPage from '../features/auth/AuthPage';
-import { Button } from '@/components/ui/button';
 import ChatPage from '@/features/chat/ChatPage';
+import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 
-// Example Home component inline for now
-const Home = () => <Button>Click me</Button>;
+    // Example Home component inline for now
+const Home = () => <ThemeSwitcher />;
 
 const routes: RouteObject[] = [
     {

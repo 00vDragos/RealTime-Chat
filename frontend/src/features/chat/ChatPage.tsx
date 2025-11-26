@@ -33,7 +33,7 @@ export default function ChatPage() {
             />
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col bg-gray-50">
+            <div className="flex-1 flex flex-col bg-[rgb(var(--background))]">
                 <Navbar />
 
                 <div className="flex-1 flex flex-col p-6 overflow-y-auto">
@@ -43,7 +43,7 @@ export default function ChatPage() {
                             onEdit={handleEditMessage}
                         />
                     ) : (
-                        <div className="flex-1 flex items-center justify-center text-gray-400">
+                        <div className="flex-1 flex items-center justify-center text-[rgb(var(--muted-foreground))]">
                             <p className="text-lg">Select a chat to start messaging</p>
                         </div>
                     )}

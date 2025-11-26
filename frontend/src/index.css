@@ -1,34 +1,3 @@
-/* Explicit Endava Light theme class for scalable theme switching */
-.theme-endava-light {
-    --primary-bright: 255 120 40; /* vivid orange for my messages in light mode */
-  --background: 215 217 219;
-  --foreground: 25 43 55;
-  --primary: 255 86 65;
-  --primary-foreground: 215 217 219;
-  --card: 215 217 219;
-  --card-foreground: 25 43 55;
-  --popover: 215 217 219;
-  --popover-foreground: 25 43 55;
-  --secondary: 200 202 204;
-  --secondary-foreground: 25 43 55;
-  --muted: 190 192 194;
-  --muted-foreground: 71 85 95;
-  --accent: 205 207 209;
-  --accent-foreground: 25 43 55;
-  --destructive: 232 70 65;
-  --destructive-foreground: 215 217 219;
-  --border: 180 182 184;
-  --input: 180 182 184;
-  --ring: 255 86 65;
-  --sidebar: 205 207 209;
-  --sidebar-foreground: 25 43 55;
-  --sidebar-primary: 255 86 65;
-  --sidebar-primary-foreground: 215 217 219;
-  --sidebar-accent: 190 192 194;
-  --sidebar-accent-foreground: 25 43 55;
-  --sidebar-border: 180 182 184;
-  --sidebar-ring: 255 86 65;
-}
 @import "tailwindcss";
 @import "tw-animate-css";
 /* =============================== */
@@ -89,8 +58,6 @@
 
   --primary: 255 86 65;           /* still Endava orange */
   --primary-foreground: 25 43 55; /* dark text when needed */
-  --primary-bright: 255 120 80;   /* brighter orange for sent messages */
-  --primary-bright: 255 86 65;
   --primary-bright: 255 86 65;
 
   --card: 32 44 56;               /* slightly lighter panel than background */
@@ -125,6 +92,37 @@
   --sidebar-ring: 255 86 65;
 }
 
+/* Explicit Endava Light theme class for scalable theme switching */
+.theme-endava-light {
+    --primary-bright: 255 120 40; /* vivid orange for my messages in light mode */
+  --background: 215 217 219;
+  --foreground: 25 43 55;
+  --primary: 255 86 65;
+  --primary-foreground: 215 217 219;
+  --card: 215 217 219;
+  --card-foreground: 25 43 55;
+  --popover: 215 217 219;
+  --popover-foreground: 25 43 55;
+  --secondary: 200 202 204;
+  --secondary-foreground: 25 43 55;
+  --muted: 190 192 194;
+  --muted-foreground: 71 85 95;
+  --accent: 205 207 209;
+  --accent-foreground: 25 43 55;
+  --destructive: 232 70 65;
+  --destructive-foreground: 215 217 219;
+  --border: 180 182 184;
+  --input: 180 182 184;
+  --ring: 255 86 65;
+  --sidebar: 205 207 209;
+  --sidebar-foreground: 25 43 55;
+  --sidebar-primary: 255 86 65;
+  --sidebar-primary-foreground: 215 217 219;
+  --sidebar-accent: 190 192 194;
+  --sidebar-accent-foreground: 25 43 55;
+  --sidebar-border: 180 182 184;
+  --sidebar-ring: 255 86 65;
+}
 
 @custom-variant dark (&:is(.dark *));
 

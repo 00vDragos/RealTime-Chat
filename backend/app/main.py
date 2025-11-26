@@ -1,7 +1,23 @@
 # app/main.py
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
-app = FastAPI(title="Real-Time Chat API")
+# Load .env early to avoid import-order issues when Settings() is constructed
+load_dotenv()
+
+from app.db.init_db import init_db
+from app.core.config import settings
+
+
+app = FastAPI(title=settings.APP_NAME)
+
+
+@app.on_event("startup")
+async def on_startup():
+    # In development we create tables for convenience. In production use Alembic migrations.
+    if settings.DEBUG:
+        await init_db(create_tables=True)
+
 
 @app.get("/healthz")
 async def health_check():

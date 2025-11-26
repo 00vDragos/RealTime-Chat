@@ -42,20 +42,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-
-
-class Config(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-    )
-
-    APP_NAME: str = "Real-Time Chat API"
-    DEBUG: bool = False
-    DATABASE_URL: str = "sqlite:///./test.db"
-    SECRET_KEY: str = "your-secret-key"
-    ALLOWED_HOSTS: list[str] = ["*"]
-    API_VERSION: str = "/api/v1"

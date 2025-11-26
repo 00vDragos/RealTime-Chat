@@ -6,62 +6,19 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const mockChats = [
-  {
-    id: 1,
-    name: 'John Doe',
-    lastMessage: 'Hey, how are you doing?',
-    timestamp: '10:30 AM',
-    unread: 2,
-    avatar: 'JD'
-  },
-  {
-    id: 2,
-    name: 'Sarah Smith',
-    lastMessage: 'See you tomorrow!',
-    timestamp: '9:15 AM',
-    unread: 0,
-    avatar: 'SS'
-  },
-  {
-    id: 3,
-    name: 'Team Project',
-    lastMessage: 'The deadline is next week',
-    timestamp: 'Yesterday',
-    unread: 5,
-    avatar: 'TP'
-  },
-  {
-    id: 4,
-    name: 'Mom',
-    lastMessage: "Don't forget to call me",
-    timestamp: 'Yesterday',
-    unread: 1,
-    avatar: 'M'
-  },
-  {
-    id: 5,
-    name: 'Alex Johnson',
-    lastMessage: 'Thanks for the help!',
-    timestamp: 'Monday',
-    unread: 0,
-    avatar: 'AJ'
-  },
-  {
-    id: 6,
-    name: 'Work Group',
-    lastMessage: 'Meeting at 3 PM',
-    timestamp: 'Monday',
-    unread: 0,
-    avatar: 'WG'
-  }
-];
 
-export default function SideBar() {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
+import type { Chat } from "./mockData";
+
+type SideBarProps = {
+  chats: Chat[];
+  selectedChatId: number | null;
+  setSelectedChatId: (id: number) => void;
+};
+
+export default function SideBar({ chats, selectedChatId, setSelectedChatId }: SideBarProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredChats = mockChats.filter(chat =>
+  const filteredChats = chats.filter(chat =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -97,9 +54,9 @@ export default function SideBar() {
         {filteredChats.map((chat) => (
           <div
             key={chat.id}
-            onClick={() => setSelectedChat(chat.id)}
+            onClick={() => setSelectedChatId(chat.id)}
             className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b transition-colors ${
-              selectedChat === chat.id ? 'bg-gray-100' : ''
+              selectedChatId === chat.id ? 'bg-gray-100' : ''
             }`}
           >
             {/* Avatar */}

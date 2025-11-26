@@ -3,7 +3,6 @@ import AuthPage from '../features/auth/AuthPage';
 import ChatPage from '@/features/chat/ChatPage';
 import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 
-    // Example Home component inline for now
 const Home = () => <ThemeSwitcher />;
 
 const routes: RouteObject[] = [

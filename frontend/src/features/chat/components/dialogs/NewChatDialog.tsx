@@ -72,7 +72,7 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: num
                     style={{ pointerEvents: 'none' }}
                   />
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))]">
+                    <AvatarFallback className="bg-[rgb(var(--primary))] text-white">
                       {contact.avatar}
                     </AvatarFallback>
                   </Avatar>

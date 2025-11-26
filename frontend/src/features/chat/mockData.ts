@@ -1,3 +1,14 @@
+// Example contacts list for new chat dialog
+export const contacts = [
+  { id: 101, name: "Alice Blue", avatar: "AB" },
+  { id: 102, name: "Bob Green", avatar: "BG" },
+  { id: 103, name: "Charlie Red", avatar: "CR" },
+  { id: 104, name: "Diana Yellow", avatar: "DY" },
+  { id: 104, name: "Diana Yellow", avatar: "DY" },
+  { id: 104, name: "Diana Yellow", avatar: "DY" },
+  { id: 104, name: "Diana Yellow", avatar: "DY" },
+  { id: 104, name: "Diana Yellow", avatar: "DY" },
+];
 export type Message = {
   id: number;
   text: string;

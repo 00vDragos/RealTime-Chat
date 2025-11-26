@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, MoreVertical, MessageCircle } from 'lucide-react';
+import { Search, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 import type { Chat } from "./mockData";
+import NewChatDialog from "./NewChatDialog";
 
 type SideBarProps = {
   chats: Chat[];
@@ -22,6 +23,14 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId }: Si
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Handler for starting a new chat with multiple contacts
+  const handleStartChat = (contactIds: number[]) => {
+    if (contactIds.length > 0) {
+      setSelectedChatId(contactIds[0]);
+    }
+    // TODO: Add logic to create a new chat with all selected contacts
+  };
+
   return (
     <div className="h-screen bg-white border-r flex flex-col" style={{ flexBasis: '25%', minWidth: 280, maxWidth: 400 }}>
       {/* Header */}
@@ -29,9 +38,7 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId }: Si
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold text-gray-800">Chats</h1>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon">
-              <MessageCircle className="h-5 w-5" />
-            </Button>
+            <NewChatDialog onSelect={handleStartChat} />
             <Button variant="ghost" size="icon">
               <MoreVertical className="h-5 w-5" />
             </Button>

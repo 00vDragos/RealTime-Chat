@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Search, MessageCircle } from 'lucide-react';
+import { MoreVertical, Search, MessageCircle} from 'lucide-react';
 
 export default function NavBar() {
     return (

@@ -1,9 +1,5 @@
 # app/main.py
-from dotenv import load_dotenv
 from fastapi import FastAPI
-
-# Load .env early to avoid import-order issues when Settings() is constructed
-load_dotenv()
 
 from app.db.init_db import init_db
 from app.core.config import settings

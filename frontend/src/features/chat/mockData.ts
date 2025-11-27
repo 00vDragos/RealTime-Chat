@@ -74,3 +74,9 @@ export const contacts = [
   { id: 107, name: "Diana Yellow", avatar: "DY" },
   { id: 108, name: "Diana Yellow", avatar: "DY" },
 ];
+
+// Example incoming friend requests for ManageFriendshipDialog
+export const initialFriendRequests = [
+  { id: 1, email: "alice@example.com", name: "Alice Blue", avatar: "AB" },
+  { id: 2, email: "bob@example.com", name: "Bob Green", avatar: "BG" },
+];

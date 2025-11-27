@@ -11,8 +11,7 @@ import { Toaster as Sonner, type ToasterProps } from "sonner"
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
 
-  // These CSS variables are defined in your index.css for Endava themes
-  // They will automatically apply based on the current theme class on <body>
+  //CSS variables are defined in your index.css for Endava themes
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}

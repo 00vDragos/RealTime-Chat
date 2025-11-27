@@ -10,7 +10,7 @@ export default function ChatPage() {
     const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
-    const [chatState, setChatState] = useState(chats);
+    const [chatState] = useState(chats);
     const selectedChat = chatState.find((c) => c.id === selectedChatId);
 
     // Handler for editing a message

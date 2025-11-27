@@ -1,4 +1,4 @@
-import { Search, MoreVertical } from 'lucide-react';
+import { Search, MoreVertical} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import NewChatDialog from "../dialogs/NewChatDialog";
+import ManageFriendshipDialog from "../dialogs/ManageFriendshipDialog";
 import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 
 type SideBarHeaderProps = {
@@ -22,8 +23,11 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
     <div className="bg-[rgb(var(--background))] px-4 py-3 border-b">
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-xl font-semibold text-[rgb(var(--foreground))]">Chats</h1>
-        <div className="flex gap-2">
+        <div className="flex">
+
           <NewChatDialog onSelect={onStartChat} />
+          <ManageFriendshipDialog />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">

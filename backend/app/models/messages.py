@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, Text, TIMESTAMP, Index
+from sqlalchemy import Column, Text, TIMESTAMP, Index, Boolean
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
 from app.db.session import Base
 from sqlalchemy import ForeignKey
@@ -13,6 +13,8 @@ class Message(Base):
     created_at = Column(TIMESTAMP, nullable=False)
     delivered_at = Column(JSONB, nullable=True)  # per-recipient map
     seen_at = Column(JSONB, nullable=True)
+    # mark that message was deleted for everyone
+    deleted_for_everyone = Column(Boolean, nullable=False, default=False, server_default="false")
 
     __table_args__ = (
         Index("idx_messages_conversation_created_at", "conversation_id", "created_at"),

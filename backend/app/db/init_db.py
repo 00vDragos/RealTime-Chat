@@ -1,10 +1,13 @@
 from typing import Callable
 
-from app.core.config import settings
 from app.db.session import engine, Base
 
 
-async def init_db(create_tables: bool = False, run_migrations: bool = False, alembic_callable: Callable | None = None) -> None:
+async def init_db(
+    create_tables: bool = False,
+    run_migrations: bool = False,
+    alembic_callable: Callable | None = None,
+) -> None:
     """Initialize the database on app startup.
 
     - `create_tables`: if True, run `Base.metadata.create_all()` (good for quick dev setup).

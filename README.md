@@ -1,33 +1,48 @@
-# ⚙️ Build & Run (Backend only)
+# Real-Time Chat
 
-### 1️⃣ Build imaginea Docker ###
+## ⚙️ Build & Run (Backend only)
 
-Execută din rădăcina proiectului:
-    docker build -t realtime-chat-backend -f Dockerfile_backend 
-Ruleaza containerul:
-    docker run --name realtime-chat-backend -p 8000:8000 realtime-chat-backend
+### 1️⃣ Build image
 
-Acceseaza endpointul http://localhost:8000/healthz
+From the project root:
 
----
+```powershell
+docker build -t realtime-chat-backend -f Dockerfile_backend .
+```
 
-# ⚙️ Build & Run (Backend & Frontend with Docker Compose)
+### 2️⃣ Run the container
 
-## 1 Build & Run All Services
+```powershell
+docker run --name realtime-chat-backend -p 8000:8000 realtime-chat-backend
+```
 
-From the project root, run:
+Access the health endpoint at `http://localhost:8000/healthz`.
 
-    docker-compose up --build
+## Formatting & Linting
 
-This will build and start:
-- Backend (FastAPI, port 8000)
-- Frontend (Vite, port 5173)
-- PostgreSQL (port 5432)
+This project uses Black for formatting and Ruff for linting. A `pre-commit` hook runs both locally and the project has a CI workflow to validate PRs.
 
-## 2 Access the Apps
+Setup (local):
 
-- Backend: http://localhost:8000/healthz
-- Frontend: http://localhost:5173/
+```powershell
+# Activate your virtualenv
+.\.venv\\Scripts\\Activate.ps1
 
----
-# RealTime-Chat
+# Install Git hooks
+pre-commit install
+
+# Install pre-commit hooks
+pre-commit install --install-hooks
+
+# Run hooks once on every file
+pre-commit run --all-files
+```
+
+CI: A GitHub Actions workflow runs `pre-commit` for every push and pull request. See `.github/workflows/pre-commit.yml`.
+
+If you prefer to run tools manually:
+
+```powershell
+ruff check .
+black .
+```

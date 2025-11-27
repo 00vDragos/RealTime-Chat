@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [".git", "__pycache__", "build", "dist", "venv", ".venv", "node_modules"]
+
+[tool.ruff.lint.per-file-ignores]
+# allow tests to use print or slow assertions
+"tests/*" = ["T001"]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']

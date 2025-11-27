@@ -7,3 +7,7 @@ exclude = [".git", "__pycache__", "build", "dist", "venv", ".venv", "node_module
 [tool.ruff.per-file-ignores]
 # allow tests to use print or slow assertions
 "tests/*" = ["T001"]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']

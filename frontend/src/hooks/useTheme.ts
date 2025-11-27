@@ -5,7 +5,7 @@ export type Theme = "endava-light" | "endava-dark";
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem("theme") as Theme) || "endava-light";
+    return (localStorage.getItem("theme") as Theme) || "endava-dark";
   });
 
   useEffect(() => {

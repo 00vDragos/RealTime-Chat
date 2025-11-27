@@ -1,5 +1,5 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { useTheme } from "./useTheme";
+import { useTheme } from "../hooks/useTheme";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();

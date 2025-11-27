@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import type { Theme } from "./useTheme";
+import type { Theme } from "../hooks/useTheme";
 
 // Context type
 type ThemeContextType = {

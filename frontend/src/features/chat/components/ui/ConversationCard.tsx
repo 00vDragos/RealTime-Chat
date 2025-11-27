@@ -43,6 +43,7 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
                             {chat.unread}
                         </Badge>
                     )}
+                
                 </div>
             </div>
         </div>

@@ -1,0 +1,13 @@
+# keep host deps & junk out of images
+**/node_modules
+**/.cache
+**/dist
+**/build
+**/.next
+**/.turbo
+
+.git
+.gitignore
+.env
+__pycache__/
+*.pyc

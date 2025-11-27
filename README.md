@@ -28,11 +28,11 @@ Setup (local):
 # Activate your virtualenv
 .\.venv\\Scripts\\Activate.ps1
 
-# Install dev tools
-pip install pre-commit black ruff
-
 # Install Git hooks
 pre-commit install
+
+# Install pre-commit hooks
+pre-commit install --install-hooks
 
 # Run hooks once on every file
 pre-commit run --all-files

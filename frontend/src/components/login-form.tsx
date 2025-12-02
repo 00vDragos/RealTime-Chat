@@ -1,6 +1,6 @@
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,14 +8,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { FieldDescription } from "@/components/ui/field"
-import { useNavigate } from "react-router-dom"
+import { FieldDescription } from "@/components/ui/field";
+import { useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import { toast } from "sonner";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
-  const handleGoogleSignIn = () => {
-    navigate("/chat");
-  };
+
+  const login = useGoogleLogin({
+    flow: 'implicit',
+    onSuccess: async (tokenResponse) => {
+      const accessToken = tokenResponse.access_token;
+      if (!accessToken) {
+        toast.error('No access token received');
+        return;
+      }
+      // TODO: POST accessToken to backend for verification / exchange
+      // Example:
+      // try {
+      //   const res = await fetch('http://localhost:8000/auth/google', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ access_token: accessToken }),
+      //     credentials: 'include',
+      //   });
+      //   if (!res.ok) {
+      //     toast.error('Login failed');
+      //     return;
+      //   }
+      // } catch (e) {
+      //   toast.error('Network error');
+      //   return;
+      // }
+      toast.success('Logged in with Google');
+      navigate('/chat');
+    },
+    onError: () => toast.error('Google authentication failed'),
+  });
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -31,7 +61,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               variant="outline"
               type="button"
               className="w-full flex items-center justify-center gap-2 py-6 text-base font-medium"
-              onClick={handleGoogleSignIn}
+              onClick={() => login()}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5">
                 <path

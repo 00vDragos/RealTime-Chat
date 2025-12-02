@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, TIMESTAMP, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
-from app.db.session import Base
+from backend.app.db.session import Base
 
 
 class ConversationsParticipants(Base):
@@ -11,4 +11,5 @@ class ConversationsParticipants(Base):
     conversation_id = Column(PG_UUID(as_uuid=True), ForeignKey("conversations.id"), nullable=False, index=True)
     user_id = Column(PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     joined_at = Column(TIMESTAMP, nullable=True)
+    last_read_message_id = Column(PG_UUID(as_uuid=True), ForeignKey("messages.id"), nullable=True)
     conversation = relationship("Conversations", back_populates="participants")

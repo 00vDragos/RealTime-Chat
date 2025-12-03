@@ -1,14 +1,13 @@
 export type Message = {
-  id: number;
+  id: string;
   text: string;
   sender: string;
   time: string;
-  // Marks the message as deleted; UI will show a placeholder
   isDeleted?: boolean;
 };
 
 export type Chat = {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   lastMessage: string;
@@ -16,3 +15,4 @@ export type Chat = {
   unread: number;
   messages: Message[];
 };
+

@@ -5,8 +5,8 @@ import ConversationCard from "./ConversationCard";
 
 type ConversationsListProps = {
   chats: Chat[];
-  selectedChatId: number | null;
-  setSelectedChatId: (id: number) => void;
+  selectedChatId: string | null;
+  setSelectedChatId: (id: string) => void;
 };
 
 export default function ConversationsList({ chats, selectedChatId, setSelectedChatId }: ConversationsListProps) {

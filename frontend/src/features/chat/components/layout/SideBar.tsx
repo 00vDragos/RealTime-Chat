@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import type { Chat } from "../../mockData";
+import type { Chat } from "../../types";
 import SideBarHeader from "./SideBarHeader";
 import ConversationsList from "../ui/ConversationsList";
 
 type SideBarProps = {
     chats: Chat[];
-    selectedChatId: number | null;
-    setSelectedChatId: (id: number) => void;
+    selectedChatId: string | null;
+    setSelectedChatId: (id: string) => void;
 };
 
 export default function SideBar({ chats, selectedChatId, setSelectedChatId }: SideBarProps) {
@@ -17,9 +17,9 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId }: Si
     );
 
     // Handler for starting a new chat with multiple contacts
-    const handleStartChat = (contactIds: number[]) => {
+    const handleStartChat = (contactIds: (number | string)[]) => {
         if (contactIds.length > 0) {
-            setSelectedChatId(contactIds[0]);
+            setSelectedChatId(String(contactIds[0]));
         }
         // TODO: Add logic to create a new chat with all selected contacts
     };

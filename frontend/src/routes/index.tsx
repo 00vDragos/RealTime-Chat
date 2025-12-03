@@ -1,9 +1,10 @@
 import type { RouteObject } from 'react-router-dom';
 import AuthPage from '../features/auth/AuthPage';
 import ChatPage from '@/features/chat/ChatPage';
-import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
+// import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
+import { Navigate } from 'react-router-dom';
 
-const Home = () => <ThemeSwitcher />;
+const Home = () => <Navigate to="/auth" replace />;
 
 const routes: RouteObject[] = [
     {

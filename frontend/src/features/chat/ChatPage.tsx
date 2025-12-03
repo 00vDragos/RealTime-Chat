@@ -7,9 +7,9 @@ import MessagesInput from "./components/ui/MessagesInput";
 import type { Message } from "./types";
 
 export default function ChatPage() {
-    const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
+    const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
     const [messageInput, setMessageInput] = useState("");
-    const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     const [chatState] = useState(chats);
     const selectedChat = chatState.find((c) => c.id === selectedChatId);
 

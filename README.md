@@ -1,5 +1,47 @@
 # Real-Time Chat
 
+## 🔑 Environment Setup
+
+This project uses two separate environment files:
+
+- Backend: create a `.env` at the repo root (used by FastAPI/Pydantic).
+- Frontend: create a `frontend/.env` for Vite (only `VITE_*` vars are exposed).
+
+Create both files manually and fill in values:
+
+```powershell
+# Backend
+New-Item -ItemType File .env -Force
+
+# Frontend
+New-Item -ItemType File frontend/.env -Force
+```
+
+Backend `.env` example content:
+
+```
+POSTGRES_USER=<POSTGRES_USER>
+POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+POSTGRES_DB=<POSTGRES_DB>
+POSTGRES_HOST=<DB_HOST>
+POSTGRES_PORT=<DB_PORT>
+
+
+DATABASE_URL=postgresql+asyncpg://<POSTGRES_USER>:<POSTGRES_PASSWORD>@<DB_HOST>:<DB_PORT>/<POSTGRES_DB>
+```
+
+Frontend `frontend/.env` example content:
+
+```
+VITE_GOOGLE_CLIENT_ID=<GOOGLE_OAUTH_WEB_CLIENT_ID>
+VITE_API_URL=<BACKEND_BASE_URL>
+```
+
+Notes:
+- Keep secrets out of Git. `.env` files are already gitignored.
+- Ensure `VITE_API_URL` points to your backend base URL.
+- The Google client ID must be the OAuth Web client ID.
+
 ## ⚙️ Build & Run (Backend only)
 
 ### 1️⃣ Build image

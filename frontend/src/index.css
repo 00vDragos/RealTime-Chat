@@ -241,32 +241,3 @@
     @apply bg-background text-foreground m-0;
   }
 }
-
-/* Base light theme */
-:root {
-  --background: rgb(255 255 255);
-  --foreground: 15 23 42;
-  --primary: 99 102 241;
-}
-
-/* Dark */
-.theme-dark {
-  --background: rgb(15 23 42);
-  --foreground: 255 255 255;
-  --primary: 168 85 247;
-}
-
-/* Forest */
-.theme-forest {
-  --background: rgb(15 32 24);
-  --foreground: 226 232 240;
-  --primary: 34 197 94;
-}
-
-/* Sunrise */
-.theme-sunrise {
-  --background: rgb(255 245 230);
-  --foreground: 120 53 15;
-  --primary: 249 115 22;
-}
-

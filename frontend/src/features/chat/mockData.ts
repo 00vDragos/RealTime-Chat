@@ -1,4 +1,4 @@
-import type { Message, Chat } from "./types";
+import type { Chat } from "./types";
 
 export const chats: Chat[] = [
   {
@@ -65,4 +65,5 @@ export const contacts = [
 export const initialFriendRequests = [
   { id: 1, email: "alice@example.com", name: "Alice Blue", avatar: "AB" },
   { id: 2, email: "bob@example.com", name: "Bob Green", avatar: "BG" },
+
 ];

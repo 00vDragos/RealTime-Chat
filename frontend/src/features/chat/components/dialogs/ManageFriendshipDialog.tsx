@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { UserPlus, Mail, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { initialFriendRequests } from "@/features/chat/mockData";
 
@@ -40,7 +41,7 @@ export default function ManageFriendshipDialog() {
                     <UserPlus className="h-5 w-5 text-[rgb(var(--muted-foreground))]" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-[rgb(var(--card))] text-[rgb(var(--card-foreground))]">
+            <DialogContent className="max-w-md bg-[rgb(var(--card))] text-[rgb(var(--card-foreground))] max-h-[80vh] overflow-hidden">
                 <DialogHeader>
                     <DialogTitle>Manage Friendships</DialogTitle>
                 </DialogHeader>
@@ -75,27 +76,29 @@ export default function ManageFriendshipDialog() {
                     {requests.length === 0 ? (
                         <div className="text-[rgb(var(--muted-foreground))] text-sm">No pending requests.</div>
                     ) : (
-                        <div className="flex flex-col gap-3">
-                            {requests.map((req) => (
-                                <div key={req.id} className="flex items-center justify-between bg-[rgb(var(--muted))] rounded-md px-3 py-2">
-                                    <div className="flex items-center gap-3">
-                                        <Avatar>
-                                            <AvatarFallback className="bg-[rgb(var(--primary))] text-white">{req.avatar}</AvatarFallback>
-                                        </Avatar>
-                                        <Badge variant="secondary">{req.name}</Badge>
-                                        <span className="text-[rgb(var(--muted-foreground))] text-xs">{req.email}</span>
+                        <ScrollArea className="w-full h-64" type="always">
+                            <div className="flex flex-col gap-3 pr-2">
+                                {requests.map((req) => (
+                                    <div key={req.id} className="flex items-center justify-between bg-[rgb(var(--muted))] rounded-md px-3 py-2">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarFallback className="bg-[rgb(var(--primary))] text-white">{req.avatar}</AvatarFallback>
+                                            </Avatar>
+                                            <Badge variant="secondary">{req.name}</Badge>
+                                            <span className="text-[rgb(var(--muted-foreground))] text-xs">{req.email}</span>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button size="icon-sm" variant="default" onClick={() => handleAccept(req.id)} aria-label="Accept">
+                                                <Check className="h-4 w-4" />
+                                            </Button>
+                                            <Button size="icon-sm" variant="destructive" onClick={() => handleDecline(req.id)} aria-label="Decline">
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-1">
-                                        <Button size="icon-sm" variant="default" onClick={() => handleAccept(req.id)} aria-label="Accept">
-                                            <Check className="h-4 w-4" />
-                                        </Button>
-                                        <Button size="icon-sm" variant="destructive" onClick={() => handleDecline(req.id)} aria-label="Decline">
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        </ScrollArea>
                     )}
                 </div>
             </DialogContent>

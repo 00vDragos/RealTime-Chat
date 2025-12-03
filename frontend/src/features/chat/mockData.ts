@@ -1,19 +1,4 @@
-export type Message = {
-  id: number;
-  text: string;
-  sender: string;
-  time: string;
-};
-
-export type Chat = {
-  id: number;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: number;
-  messages: Message[];
-};
+import type { Message, Chat } from "./types";
 
 export const chats: Chat[] = [
   {
@@ -39,6 +24,7 @@ export const chats: Chat[] = [
     messages: [
       { id: 1, text: 'See you tomorrow!', sender: 'Sarah', time: '9:15 AM' },
       { id: 2, text: 'Sure!', sender: 'Me', time: '9:16 AM' },
+      { id: 3, text: '', sender: 'Me', time: '9:17 AM', isDeleted: true },
     ],
   },
   {
@@ -50,11 +36,11 @@ export const chats: Chat[] = [
     unread: 5,
     messages: [
       { id: 1, text: 'The deadline is next week', sender: 'Team', time: 'Yesterday' },
-      { id: 2, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 2, text: '', sender: 'Team', time: '9:17 AM', isDeleted: true },
       { id: 3, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
       { id: 4, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
       { id: 5, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
-      { id: 6, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
+      { id: 6, text: '', sender: 'Me', time: '9:17 AM', isDeleted: true },
       { id: 7, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
       { id: 8, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },
       { id: 9, text: 'Let’s finish it soon.', sender: 'Me', time: 'Yesterday' },

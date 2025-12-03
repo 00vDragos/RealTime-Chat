@@ -3,6 +3,8 @@ export type Message = {
   text: string;
   sender: string;
   time: string;
+  // Marks the message as deleted; UI will show a placeholder
+  isDeleted?: boolean;
 };
 
 export type Chat = {

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.messages import Message
+from app.models.messages import Message
 
 
 async def edit_message(

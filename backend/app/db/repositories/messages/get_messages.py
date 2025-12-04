@@ -3,7 +3,7 @@ from typing import Sequence
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.messages import Message
+from app.models.messages import Message
 
 
 async def get_messages(

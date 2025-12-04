@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.conversation_participants import ConversationsParticipants
+from app.models.conversation_participants import ConversationsParticipants
 
 
 async def update_last_read(

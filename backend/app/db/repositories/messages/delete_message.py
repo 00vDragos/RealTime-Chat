@@ -1,8 +1,10 @@
 import uuid
 from datetime import datetime
 
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.message_deletions import MessageDeletion
+from app.models.message_deletions import MessageDeletion
+from app.models.messages import Message
 
 
 async def delete_message(
@@ -16,5 +18,12 @@ async def delete_message(
         deleted_at=datetime.utcnow()
     )
     db.add(deletion)
+    await db.execute(
+        update(Message)
+        .where(Message.id == message_id)
+        .values(
+            deleted_for_everyone=True
+        )
+    )
     await db.commit()
     return deletion

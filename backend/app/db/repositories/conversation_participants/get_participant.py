@@ -1,7 +1,7 @@
 import uuid
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.conversation_participants import ConversationsParticipants
+from app.models.conversation_participants import ConversationsParticipants
 
 
 async def get_participant(

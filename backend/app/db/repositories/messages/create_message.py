@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.messages import Message
+from app.models.messages import Message
 
 
 async def create_message(

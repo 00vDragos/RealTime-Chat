@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import Column, Text, TIMESTAMP, Index, Boolean
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
-from backend.app.db.session import Base
+from app.db.session import Base
 from sqlalchemy import ForeignKey
 
 class Message(Base):

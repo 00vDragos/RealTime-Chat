@@ -3,7 +3,7 @@ from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.models.messages import Message
+from app.models.messages import Message
 
 
 async def get_last_message_id(

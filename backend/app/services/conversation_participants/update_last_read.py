@@ -13,5 +13,5 @@ async def update_last_read_service(
         updated = await update_last_read(db, conversation_id, user_id, message_id)
         return updated
 
-    except:
+    except Exception:
         return None

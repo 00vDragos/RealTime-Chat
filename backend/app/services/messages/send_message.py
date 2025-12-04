@@ -13,5 +13,5 @@ async def send_message_service(
         msg = await create_message(db, conversation_id, user_id, body)
         return msg
 
-    except:
+    except Exception:
         return None

@@ -23,5 +23,5 @@ async def delete_message_service(
         deletion = await delete_message(db, message_id, user_id)
         return deletion
 
-    except:
+    except Exception:
         return None

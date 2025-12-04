@@ -12,5 +12,5 @@ async def get_messages_service(db, conversation_id: uuid.UUID, limit: int = 50, 
 
         return msgs
 
-    except:
+    except Exception:
         return None

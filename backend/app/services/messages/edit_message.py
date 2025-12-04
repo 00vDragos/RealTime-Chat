@@ -24,5 +24,5 @@ async def edit_message_service(
         updated = await edit_message(db, message_id, new_body)
         return updated
 
-    except:
+    except Exception:
         return None

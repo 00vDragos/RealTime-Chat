@@ -5,5 +5,5 @@ async def is_conversation_participant_service(db, conversation_id, user_id) -> b
     try:
         await get_participant(db, conversation_id, user_id)
         return True
-    except:
+    except Exception:
         return False

@@ -11,6 +11,7 @@ class ConversationParticipantBase(BaseModel):
 class ConversationParticipantRead(ConversationParticipantBase):
     id: uuid.UUID
     joined_at: Optional[datetime] = None
+    last_read_message_id: Optional[uuid.UUID] = None
 
     class Config:
         orm_mode = True

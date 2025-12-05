@@ -1,6 +1,6 @@
 import uuid
 from app.db.repositories.messages.edit_message import edit_message
-from app.services.messages.get_messages import get_messages
+from app.services.messages.get_messages import get_messages_service
 from app.models.messages import Message
 
 
@@ -12,7 +12,7 @@ async def edit_message_service(
     new_body: str
 ) -> Message | None:
     try:
-        msgs = await get_messages(db, conversation_id)
+        msgs = await get_messages_service(db, conversation_id)
         msg = next((m for m in msgs if m.id == message_id), None)
 
         if msg is None:

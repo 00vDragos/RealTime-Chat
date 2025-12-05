@@ -1,6 +1,6 @@
 import uuid
 from app.db.repositories.messages.delete_message import delete_message
-from app.services.messages.get_messages import get_messages
+from app.services.messages.get_messages import get_messages_service
 from app.models.message_deletions import MessageDeletion
 
 
@@ -11,7 +11,7 @@ async def delete_message_service(
     user_id: uuid.UUID
 ) -> MessageDeletion | None:
     try:
-        msgs = await get_messages(db, conversation_id)
+        msgs = await get_messages_service(db, conversation_id)
         msg = next((m for m in msgs if m.id == message_id), None)
 
         if msg is None:

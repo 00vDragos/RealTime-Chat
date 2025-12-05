@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 import uuid
 
 from app.services.conversation_participants.is_participant import is_conversation_participant_service
-
+from app.websocket.manager import manager
+from app.db.repositories.conversation_participants.get_all_participants import get_participants
 from app.db.dependencies import get_current_user_id, get_current_conversation_id, get_db
 from app.services.messages.send_message import send_message_service
 from app.schemas.messages import MessageRead
@@ -12,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 
-@router.post("/conversations/{conversation_id}/send", response_model=MessageRead)
+@router.post("/conversations/{conversation_id}/messages", response_model=MessageRead)
 async def send_message(
     body: str,
     db: AsyncSession = Depends(get_db),
@@ -31,6 +32,23 @@ async def send_message(
 
         if not message:
             raise HTTPException(status_code=500, detail="Unable to send message")
+
+        participants = await get_participants(db, conversation_id)
+        participant_ids = [str(p.user_id) for p in participants]
+
+        await manager.broadcast(
+            participant_ids,
+            {
+                "event": "new_message",
+                "conversation_id": str(conversation_id),
+                "message": {
+                    "id": str(message.id),
+                    "body": message.body,
+                    "sender_id": str(message.sender_id),
+                    "created_at": message.created_at,
+                },
+            }
+        )
 
         return message
 

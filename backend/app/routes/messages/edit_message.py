@@ -53,8 +53,6 @@ async def edit_message(
                     "id": str(updated.id),
                     "body": updated.body,
                     "sender_id": str(updated.sender_id),
-                    "created_at": updated.created_at,
-                    "edited_at": updated.edited_at,
                 },
             },
         )

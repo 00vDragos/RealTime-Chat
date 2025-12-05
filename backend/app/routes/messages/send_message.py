@@ -45,7 +45,6 @@ async def send_message(
                     "id": str(message.id),
                     "body": message.body,
                     "sender_id": str(message.sender_id),
-                    "created_at": message.created_at,
                 },
             }
         )

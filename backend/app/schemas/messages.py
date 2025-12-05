@@ -19,6 +19,7 @@ class MessageRead(MessageBase):
     created_at: datetime
     delivered_at: Optional[Dict[str, Any]] = None
     seen_at: Optional[Dict[str, Any]] = None
+    edited_at: Optional[datetime] = None
     deleted_for_everyone: bool = False
 
     class Config:

@@ -21,3 +21,17 @@ class ConversationRead(ConversationBase):
 
     class Config:
         orm_mode = True
+
+
+
+
+class ConversationSummary(BaseModel):
+    id: uuid.UUID
+    friendId: uuid.UUID
+    friendName: str
+    lastMessage: str | None
+    lastMessageTime: datetime | None
+    unreadCount: int
+
+    class Config:
+        orm_mode = True

@@ -2,6 +2,10 @@ from typing import Callable
 
 from app.db.session import engine, Base
 
+from app.models.users import users
+from app.models.conversations import Conversations
+from app.models.conversation_participants import ConversationsParticipants
+from app.models.messages import Message
 
 async def init_db(
     create_tables: bool = False,

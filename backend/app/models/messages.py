@@ -13,6 +13,7 @@ class Message(Base):
     created_at = Column(TIMESTAMP, nullable=False)
     delivered_at = Column(JSONB, nullable=True)  # per-recipient map
     seen_at = Column(JSONB, nullable=True)
+    edited_at = Column(TIMESTAMP, nullable=True)
     # mark that message was deleted for everyone
     deleted_for_everyone = Column(Boolean, nullable=False, default=False, server_default="false")
 

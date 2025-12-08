@@ -5,8 +5,8 @@ from app.core.config import settings
 from app.routes.messages.send_message import router as send_message_router
 from app.routes.messages.edit_message import router as edit_message_router
 from app.routes.messages.delete_message import router as delete_message_router
-from app.routes.conversation_participants.get_messages import router as get_messages_router
-from app.routes.conversation_participants.update_last_read import router as update_last_read_router
+from app.routes.messages.get_messages import router as get_messages_router
+from app.routes.messages.update_last_read import router as update_last_read_router
 from app.websocket.router import router as websocket_router
 from fastapi import FastAPI
 

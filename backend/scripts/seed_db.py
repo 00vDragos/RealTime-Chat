@@ -7,19 +7,7 @@ from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 
 # -------------------------------------------------------------------
-# Make sure we can import "backend.app.*" when run from backend/scripts
-# -------------------------------------------------------------------
-THIS_FILE = Path(__file__).resolve()
-BACKEND_DIR = THIS_FILE.parents[1]        # .../RealTime-Chat/backend
-PROJECT_ROOT = BACKEND_DIR.parent         # .../RealTime-Chat
-
-for p in (PROJECT_ROOT, BACKEND_DIR):
-    p_str = str(p)
-    if p_str not in sys.path:
-        sys.path.insert(0, p_str)
-
-# -------------------------------------------------------------------
-# App imports (config + models)
+# App imports (config + models) — keep imports at top for ruff E402
 # -------------------------------------------------------------------
 from backend.app.core.config import settings
 from backend.app.models.users import Users
@@ -30,6 +18,19 @@ from backend.app.models.friend_requests import FriendRequest
 from backend.app.models.friendships import Friendship
 from backend.app.models.message_deletions import MessageDeletion
 from backend.app.models.refresh_tokens import RefreshToken
+
+# -------------------------------------------------------------------
+# Ensure script can import when run from different working directories
+# (adjust sys.path after imports to satisfy lint rule E402)
+# -------------------------------------------------------------------
+THIS_FILE = Path(__file__).resolve()
+BACKEND_DIR = THIS_FILE.parents[1]        # .../RealTime-Chat/backend
+PROJECT_ROOT = BACKEND_DIR.parent         # .../RealTime-Chat
+
+for p in (PROJECT_ROOT, BACKEND_DIR):
+    p_str = str(p)
+    if p_str not in sys.path:
+        sys.path.insert(0, p_str)
 
 # -------------------------------------------------------------------
 # Sync engine & SessionLocal (we derive a psycopg URL from asyncpg URL)
@@ -338,7 +339,7 @@ def main() -> None:
         db.commit()
 
         # 5) Messages
-        general_msgs = seed_messages(
+        seed_messages(
             db,
             general,
             [users["alice"], users["bob"], users["charlie"]],
@@ -350,7 +351,7 @@ def main() -> None:
             ],
         )
 
-        random_msgs = seed_messages(
+        seed_messages(
             db,
             random,
             [users["alice"], users["bob"]],
@@ -361,7 +362,7 @@ def main() -> None:
             ],
         )
 
-        dm_msgs = seed_messages(
+        seed_messages(
             db,
             dm_ab,
             [users["alice"], users["bob"]],

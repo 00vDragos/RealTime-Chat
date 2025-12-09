@@ -9,15 +9,15 @@ from typing import List
 
 from sqlalchemy import delete
 
-from app.models.users import User
+from app.models.users import users
 from app.models.friend_requests import FriendRequest
 from app.models.friendships import Friendship
 from app.websocket.manager import manager
 
 
 class FriendRequestService:
-    async def find_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
-        stmt = select(User).where(User.email == email)
+    async def find_user_by_email(db: AsyncSession, email: str) -> Optional[users]:
+        stmt = select(users).where(users.email == email)
         res = await db.execute(stmt)
         return res.scalars().first()
 
@@ -95,7 +95,7 @@ class FriendRequestService:
         await db.execute(del_stmt)
         await db.commit()
 
-    async def list_friends(db: AsyncSession, user_id: UUID) -> List[User]:
+    async def list_friends(db: AsyncSession, user_id: UUID) -> List[users]:
         # find friendships where user is user_a or user_b and return the other user's info
         stmt = select(Friendship).where(or_(Friendship.user_a_id == user_id, Friendship.user_b_id == user_id))
         res = await db.execute(stmt)
@@ -108,7 +108,7 @@ class FriendRequestService:
             return []
 
         # load users
-        stmt2 = select(User).where(User.id.in_(other_ids))
+        stmt2 = select(users).where(users.id.in_(other_ids))
         res2 = await db.execute(stmt2)
         return res2.scalars().all()
 

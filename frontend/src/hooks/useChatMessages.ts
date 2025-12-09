@@ -103,12 +103,31 @@ export function useChatMessages(initialChats: Chat[]) {
       try {
         const created = await apiSendMessage(selectedChatId, USER_ID, body);
         const newMsg = mapBackendToMessage(created, USER_ID);
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: [...c.messages, newMsg] } : c)));
+        setChatsState((prev) => {
+          const updated = prev.map((c) => (
+            c.id === selectedChatId
+              ? {
+                  ...c,
+                  messages: [...c.messages, newMsg],
+                  lastMessage: created.body ?? body,
+                  timestamp: created.created_at ?? new Date().toISOString(),
+                }
+              : c
+          ));
+          return updated.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        });
       } catch (e) {
         console.warn("Failed to send to backend, appending locally", e);
         const nowIso = new Date().toISOString();
         const localMsg: Message = { id: crypto.randomUUID(), sender: "Me", text: body, time: formatTime(nowIso) };
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: [...c.messages, localMsg] } : c)));
+        setChatsState((prev) => {
+          const updated = prev.map((c) => (
+            c.id === selectedChatId
+              ? { ...c, messages: [...c.messages, localMsg], lastMessage: body, timestamp: nowIso }
+              : c
+          ));
+          return updated.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        });
       } finally {
         setMessageInput("");
       }

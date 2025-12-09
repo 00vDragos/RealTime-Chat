@@ -8,6 +8,7 @@ import { useConversations } from "../../hooks/useConversations";
 export default function ChatPage() {
     const { conversations } = useConversations([]);
     const {
+        chatsState,
         selectedChatId,
         setSelectedChatId,
         selectedChat,
@@ -23,14 +24,14 @@ export default function ChatPage() {
         <div className="flex h-screen">
             {/* Sidebar */}
             <SideBar
-                chats={conversations}
+                chats={chatsState}
                 selectedChatId={selectedChatId}
                 setSelectedChatId={setSelectedChatId}
             />
 
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col bg-[rgb(var(--sidebar))]">
-                <Navbar />
+                <Navbar name={selectedChat?.name} />
 
                 <div className="flex-1 flex flex-col p-6 pb-1 overflow-y-auto">
                     {selectedChat ? (

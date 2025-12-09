@@ -9,6 +9,7 @@ from app.services.messages.send_message import send_message_service
 from app.schemas.messages import MessageRead
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.conversation_participants.get_participant_name import get_participant_name_service
 
 router = APIRouter()
 
@@ -33,6 +34,8 @@ async def send_message(
         if not message:
             raise HTTPException(status_code=500, detail="Unable to send message")
 
+        message.sender_name = await get_participant_name_service(db, message.sender_id)
+
         participants = await get_participants(db, conversation_id)
         participant_ids = [str(p.user_id) for p in participants]
 
@@ -45,6 +48,7 @@ async def send_message(
                     "id": str(message.id),
                     "body": message.body,
                     "sender_id": str(message.sender_id),
+                    "sender_name": message.sender_name,
                 },
             }
         )

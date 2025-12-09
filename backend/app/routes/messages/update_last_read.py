@@ -13,6 +13,9 @@ from app.services.conversation_participants.update_last_read import update_last_
 from app.schemas.conversation_participants import ConversationParticipantRead
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.repositories.conversation_participants.get_all_participants import get_participants
+from app.services.conversation_participants.get_participant_name import get_participant_name_service
+from app.websocket.manager import manager
 
 router = APIRouter()
 
@@ -37,6 +40,21 @@ async def update_last_read(
 
         if not updated:
             raise HTTPException(status_code=400, detail="Unable to update last read")
+
+        participant_name = await get_participant_name_service(db, user_id)
+        participants = await get_participants(db, conversation_id)
+        participant_ids = [str(p.user_id) for p in participants]
+
+        await manager.broadcast(
+            participant_ids,
+            {
+                "event": "message_read",
+                "conversation_id": str(conversation_id),
+                "message_id": str(message_id),
+                "user_id": str(user_id),
+                "user_name": participant_name,
+            }
+        )
 
         return updated
 

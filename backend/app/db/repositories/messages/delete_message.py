@@ -22,7 +22,8 @@ async def delete_message(
         update(Message)
         .where(Message.id == message_id)
         .values(
-            deleted_for_everyone=True
+            deleted_for_everyone=True,
+            edited_at=datetime.utcnow()
         )
     )
     await db.commit()

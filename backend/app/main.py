@@ -16,6 +16,7 @@ from app.routes.friends.list_requests import router as list_friend_requests_rout
 from app.routes.friends.cancel_request import router as cancel_friend_request_router
 from app.routes.friends.list_friends import router as list_friends_router
 from app.routes.friends.remove_friend import router as remove_friend_router
+from app.routes.friends.respond_request import router as respond_request_router
 
 # WEBSOCKET ROUTES
 from app.websocket.router import router as websocket_router
@@ -38,6 +39,7 @@ app.include_router(list_friend_requests_router, tags=["friends"])
 app.include_router(cancel_friend_request_router, tags=["friends"])
 app.include_router(list_friends_router, tags=["friends"])
 app.include_router(remove_friend_router, tags=["friends"])
+app.include_router(respond_request_router, tags=["friends"])
 
 # Websocket routes
 app.include_router(websocket_router, tags=["websocket"])

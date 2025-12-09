@@ -27,11 +27,10 @@ class ConversationRead(ConversationBase):
 
 class ConversationSummary(BaseModel):
     id: uuid.UUID
-    friendId: uuid.UUID
-    friendName: str
-    lastMessage: str | None
-    lastMessageTime: datetime | None
-    unreadCount: int
+    friend_id: uuid.UUID = Field(alias="friendId")
+    friend_name: str = Field(alias="friendName")
+    last_message: str | None = Field(alias="lastMessage")
+    last_message_time: datetime | None = Field(alias="lastMessageTime")
+    unread_count: int = Field(alias="unreadCount")
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

@@ -23,8 +23,3 @@ async def list_conversations(
 ):
     service = ConversationService(ConversationRepository(db))
     return await service.list_conversations(current_user.id)
-
-async def fake_get_current_user():
-    class User:
-        id = UUID("11111111-1111-1111-1111-111111111111")
-    return User()

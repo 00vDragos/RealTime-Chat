@@ -2,12 +2,12 @@ import SideBar from "./components/layout/SideBar";
 import Navbar from "./components/layout/NavBar";
 import MessagesList from "./components/ui/MessagesList";
 import MessagesInput from "./components/ui/MessagesInput";
-import { chats } from "./mockData";
 import { useChatMessages } from "../../hooks/useChatMessages";
+import { useConversations } from "../../hooks/useConversations";
 
 export default function ChatPage() {
+    const { conversations } = useConversations([]);
     const {
-        chatsState,
         selectedChatId,
         setSelectedChatId,
         selectedChat,
@@ -17,13 +17,13 @@ export default function ChatPage() {
         handleEditStart,
         handleSend,
         handleDelete,
-    } = useChatMessages(chats);
+    } = useChatMessages(conversations);
 
     return (
         <div className="flex h-screen">
             {/* Sidebar */}
             <SideBar
-                chats={chatsState}
+                chats={conversations}
                 selectedChatId={selectedChatId}
                 setSelectedChatId={setSelectedChatId}
             />

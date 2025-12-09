@@ -93,3 +93,30 @@ export async function updateLastRead(conversationId: string, userId: string, mes
     headers: { 'user-id': userId },
   });
 }
+
+// ------------------------------------------------------------------
+// Conversations API
+// ------------------------------------------------------------------
+// Matches backend response from GET /api/messages/conversations
+export type ConversationSummary = {
+  id: string;
+  friendId: string;
+  friendName: string;
+  lastMessage: string;
+  lastMessageTime: string; // ISO
+  unreadCount: number;
+};
+
+export async function listConversations(): Promise<ConversationSummary[]> {
+  // Endpoint defined with router prefix "/api/messages"
+  return fetchJson<ConversationSummary[]>(`/api/messages/conversations`, {
+    method: 'GET',
+  });
+}
+
+export async function createConversation(participantIds: string[]) {
+  return fetchJson(`/api/messages/new_conversation`, {
+    method: 'POST',
+    body: JSON.stringify({ participant_ids: participantIds }),
+  });
+}

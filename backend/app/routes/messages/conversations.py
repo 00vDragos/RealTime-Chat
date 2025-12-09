@@ -12,7 +12,7 @@ from app.schemas.conversations import ConversationSummary, ConversationCreate
 # TEMPORARY AUTH MOCK (until real Google/JWT auth is implemented)
 async def fake_get_current_user():
     class User:
-        id = UUID("11111111-1111-1111-1111-111111111111")
+        id = UUID("1eb0fa76-fad3-4dd2-9536-ec257c29bba3")
     return User()
 
 class ConversationCreateRequest(BaseModel):

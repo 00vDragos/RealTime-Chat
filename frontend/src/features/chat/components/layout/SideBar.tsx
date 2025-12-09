@@ -12,9 +12,10 @@ type SideBarProps = {
 export default function SideBar({ chats, selectedChatId, setSelectedChatId }: SideBarProps) {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredChats = chats.filter(chat =>
-        chat.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredChats = (chats ?? []).filter(chat => {
+        const name = (chat?.name ?? '').toLowerCase();
+        return name.includes(searchQuery.toLowerCase());
+    });
 
     // Handler for starting a new chat with multiple contacts
     const handleStartChat = (contactIds: (number | string)[]) => {

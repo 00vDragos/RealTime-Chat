@@ -1,5 +1,6 @@
 # app/main.py
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.init_db import init_db
 from app.core.config import settings
@@ -17,6 +18,16 @@ from app.websocket.router import router as websocket_router
 
 
 app = FastAPI(title=settings.APP_NAME)
+
+# CORS (allow frontend dev origin)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Message routes
 

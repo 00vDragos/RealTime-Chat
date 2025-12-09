@@ -70,4 +70,4 @@ class ConversationService:
             "lastMessageTime": None,
             "unreadCount": 0
         }
-        return summary.dict(by_alias=True)
+        return summary

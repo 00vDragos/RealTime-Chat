@@ -8,7 +8,7 @@ class ConversationBase(BaseModel):
     type: str
 
 
-class ConversationCreate(ConversationBase):
+class ConversationCreate(BaseModel):
     participants: Optional[List[uuid.UUID]] = None
 
 

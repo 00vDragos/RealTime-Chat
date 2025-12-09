@@ -6,7 +6,7 @@ import { useChatMessages } from "../../hooks/useChatMessages";
 import { useConversations } from "../../hooks/useConversations";
 
 export default function ChatPage() {
-    const { conversations } = useConversations([]);
+    const { conversations, refetch } = useConversations([]);
     const {
         chatsState,
         selectedChatId,
@@ -27,6 +27,10 @@ export default function ChatPage() {
                 chats={chatsState}
                 selectedChatId={selectedChatId}
                 setSelectedChatId={setSelectedChatId}
+                onConversationCreated={async () => {
+                    // Refresh the conversation list when a new chat is created
+                    await refetch();
+                }}
             />
 
             {/* Main Chat Area */}

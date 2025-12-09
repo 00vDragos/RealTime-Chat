@@ -121,3 +121,20 @@ export async function createConversation(participantIds: string[]) {
     body: JSON.stringify({ participant_ids: participantIds }),
   });
 }
+
+// ------------------------------------------------------------------
+// Friends API
+// ------------------------------------------------------------------
+export type Friend = {
+  id: string;
+  email: string;
+  display_name?: string;
+  avatar_url?: string | null;
+};
+
+export async function listMyFriends(userId: string): Promise<Friend[]> {
+  return fetchJson<Friend[]>(`/api/friends/list`, {
+    method: 'GET',
+    headers: { 'user-id': userId },
+  });
+}

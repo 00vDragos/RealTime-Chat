@@ -19,22 +19,22 @@ export function useConversations(initial: Chat[] = []) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await listConversations();
-        const mapped = data.map(mapSummaryToChat);
-        setConversations(mapped);
-      } catch (e: any) {
-        console.warn("Failed to list conversations, falling back to initial", e);
-        setError(e?.message ?? "Failed to load conversations");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  const refetch = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await listConversations();
+      const mapped = data.map(mapSummaryToChat);
+      setConversations(mapped);
+    } catch (e: any) {
+      console.warn("Failed to list conversations, keeping existing", e);
+      setError(e?.message ?? "Failed to load conversations");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  return { conversations, setConversations, loading, error } as const;
+  useEffect(() => { refetch(); }, []);
+
+  return { conversations, setConversations, loading, error, refetch } as const;
 }

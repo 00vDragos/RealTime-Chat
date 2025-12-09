@@ -16,6 +16,7 @@ class MessageCreate(MessageBase):
 
 class MessageRead(MessageBase):
     id: uuid.UUID
+    sender_name: Optional[str] = None
     created_at: datetime
     delivered_at: Optional[Dict[str, Any]] = None
     seen_at: Optional[Dict[str, Any]] = None

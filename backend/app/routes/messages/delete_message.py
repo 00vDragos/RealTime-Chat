@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.conversation_participants.is_participant import is_conversation_participant_service
 from app.db.repositories.conversation_participants.get_all_participants import get_participants
 from app.websocket.manager import manager
+from app.services.conversation_participants.get_participant_name import get_participant_name_service
 
 router = APIRouter()
 
@@ -38,6 +39,8 @@ async def delete_message(
         if not deletion:
             raise HTTPException(status_code=400, detail="Unable to delete message")
 
+        deletion.sender_name = await get_participant_name_service(db, deletion.sender_id)
+
         participants = await get_participants(db, conversation_id)
         participant_ids = [str(p.user_id) for p in participants]
 
@@ -48,6 +51,7 @@ async def delete_message(
                 "conversation_id": str(conversation_id),
                 "message_id": str(message_id),
                 "deleted_by": str(user_id),
+                "deletor_name": deletion.sender_name,
             },
         )
 

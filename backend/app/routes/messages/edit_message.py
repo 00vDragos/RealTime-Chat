@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.conversation_participants.is_participant import is_conversation_participant_service
 from app.db.repositories.conversation_participants.get_all_participants import get_participants
 from app.websocket.manager import manager
+from app.services.conversation_participants.get_participant_name import get_participant_name_service
 
 router = APIRouter()
 
@@ -41,6 +42,8 @@ async def edit_message(
         if not updated:
             raise HTTPException(status_code=400, detail="Unable to edit message")
 
+        updated.sender_name = await get_participant_name_service(db, updated.sender_id)
+
         participants = await get_participants(db, conversation_id)
         participant_ids = [str(p.user_id) for p in participants]
 
@@ -53,6 +56,7 @@ async def edit_message(
                     "id": str(updated.id),
                     "body": updated.body,
                     "sender_id": str(updated.sender_id),
+                    "sender_name": updated.sender_name,
                 },
             },
         )

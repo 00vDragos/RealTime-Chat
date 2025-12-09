@@ -23,3 +23,8 @@ async def list_conversations(
 ):
     service = ConversationService(ConversationRepository(db))
     return await service.list_conversations(current_user.id)
+
+
+@router.post("/new_conversation", response_model=ConversationSummary)
+async def create_conversation():
+    pass

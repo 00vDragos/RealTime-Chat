@@ -43,3 +43,21 @@ class ConversationRepository:
         """
         stmt = select(users).where(users.id == user_id)
         return (await self.db.execute(stmt)).scalars().first()
+
+    async def create_conversation(self, conversation_type: str, participant_ids: list[UUID]):
+        """
+        Create a new conversation with the given participants.
+        """
+        new_conversation = Conversations(type=conversation_type)
+        self.db.add(new_conversation)
+        await self.db.flush()  # to get the new conversation ID
+
+        for pid in participant_ids:
+            participant = ConversationsParticipants(
+                conversation_id=new_conversation.id,
+                user_id=pid
+            )
+            self.db.add(participant)
+
+        await self.db.commit()
+        return new_conversation

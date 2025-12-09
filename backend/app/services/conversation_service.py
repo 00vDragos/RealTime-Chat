@@ -32,3 +32,6 @@ class ConversationService:
             })
 
         return result
+
+    async def create_conversation(self, current_user_id: UUID, participant_ids: list[UUID]):
+        pass

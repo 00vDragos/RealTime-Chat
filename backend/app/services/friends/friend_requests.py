@@ -5,6 +5,10 @@ from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
+from typing import List
+
+from sqlalchemy import delete
+
 from app.models.users import User
 from app.models.friend_requests import FriendRequest
 from app.models.friendships import Friendship
@@ -67,3 +71,61 @@ class FriendRequestService:
         # commit here or let caller commit depending on your transaction pattern
         await db.commit()
         return fr
+
+    @staticmethod
+    async def list_requests(db: AsyncSession, user_id: UUID, direction: Optional[str] = None) -> List[FriendRequest]:
+        stmt = select(FriendRequest)
+        if direction == "in":
+            stmt = stmt.where(FriendRequest.to_user_id == user_id)
+        elif direction == "out":
+            stmt = stmt.where(FriendRequest.from_user_id == user_id)
+        else:
+            stmt = stmt.where(or_(FriendRequest.to_user_id == user_id, FriendRequest.from_user_id == user_id))
+
+        stmt = stmt.order_by(FriendRequest.created_at.desc())
+        res = await db.execute(stmt)
+        return res.scalars().all()
+
+    @staticmethod
+    async def cancel_request(db: AsyncSession, user_id: UUID, request_id: UUID) -> None:
+        # Only sender can cancel
+        stmt = select(FriendRequest).where(FriendRequest.id == request_id)
+        res = await db.execute(stmt)
+        fr = res.scalars().first()
+        if not fr:
+            raise HTTPException(status_code=404, detail="Friend request not found")
+        if str(fr.from_user_id) != str(user_id):
+            raise HTTPException(status_code=403, detail="Only sender can cancel the request")
+        del_stmt = delete(FriendRequest).where(FriendRequest.id == request_id)
+        await db.execute(del_stmt)
+        await db.commit()
+
+    @staticmethod
+    async def list_friends(db: AsyncSession, user_id: UUID) -> List[User]:
+        # find friendships where user is user_a or user_b and return the other user's info
+        stmt = select(Friendship).where(or_(Friendship.user_a_id == user_id, Friendship.user_b_id == user_id))
+        res = await db.execute(stmt)
+        frs = res.scalars().all()
+        other_ids = []
+        for f in frs:
+            other_ids.append(f.user_b_id if f.user_a_id == user_id else f.user_a_id)
+
+        if not other_ids:
+            return []
+
+        # load users
+        stmt2 = select(User).where(User.id.in_(other_ids))
+        res2 = await db.execute(stmt2)
+        return res2.scalars().all()
+
+    @staticmethod
+    async def remove_friend(db: AsyncSession, user_id: UUID, friend_id: UUID) -> None:
+        # delete friendship in either direction
+        stmt = delete(Friendship).where(
+            or_(
+                (Friendship.user_a_id == user_id) & (Friendship.user_b_id == friend_id),
+                (Friendship.user_a_id == friend_id) & (Friendship.user_b_id == user_id),
+            )
+        )
+        await db.execute(stmt)
+        await db.commit()

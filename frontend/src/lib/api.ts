@@ -40,6 +40,7 @@ export type BackendMessage = {
   id: string;
   conversation_id: string;
   sender_id: string;
+  sender_name?: string;
   body: string;
   created_at: string; // ISO
   delivered_at?: Record<string, unknown> | null;

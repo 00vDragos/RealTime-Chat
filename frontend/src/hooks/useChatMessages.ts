@@ -19,7 +19,8 @@ function formatTime(iso: string) {
 function mapBackendToMessage(bm: BackendMessage, userId: string): Message {
   return {
     id: bm.id,
-    sender: bm.sender_id === userId ? "Me" : bm.sender_id,
+    // Show name for others; keep "Me" for own messages to preserve UI logic
+    sender: bm.sender_id === userId ? "Me" : (bm.sender_name || bm.sender_id),
     text: bm.body,
     time: formatTime(bm.created_at),
     isDeleted: bm.deleted_for_everyone,
@@ -33,6 +34,11 @@ export function useChatMessages(initialChats: Chat[]) {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
 
   const selectedChat = useMemo(() => chatsState.find((c) => c.id === selectedChatId) || null, [chatsState, selectedChatId]);
+
+  // Keep local chats state in sync when conversations load/update (stable initialization)
+  useEffect(() => {
+    setChatsState(initialChats);
+  }, [initialChats]);
 
   useEffect(() => {
     if (!selectedChatId) return;

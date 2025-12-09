@@ -48,8 +48,18 @@ class ConversationService:
         # Determine conversation type: direct for exactly 2 participants, otherwise group
         conversation_type = "direct" if len(participants) == 2 else "group"
 
-        # Create the conversation
-        conversation = await self.repo.create_conversation(conversation_type, participants)
+        # For direct conversations, check for existing between the two participants
+        if conversation_type == "direct":
+            # Direct must be exactly two participants: current user + one other
+            other = others[0]
+            user_a, user_b = sorted([current_user_id, other], key=lambda x: str(x))
+            existing = await self.repo.find_direct_conversation_by_participants(user_a, user_b)
+            if existing:
+                conversation = existing
+            else:
+                conversation = await self.repo.create_conversation(conversation_type, participants)
+        else:
+            conversation = await self.repo.create_conversation(conversation_type, participants)
 
         if conversation_type == "direct":
             # Pick the other participant as 'friend' for direct convo summary

@@ -61,3 +61,23 @@ class ConversationRepository:
 
         await self.db.commit()
         return new_conversation
+
+    async def find_direct_conversation_by_participants(self, user_a: UUID, user_b: UUID):
+        """
+        Return an existing direct conversation that includes exactly the two participants provided,
+        or None if not found.
+        """
+        # Find conversations where type is direct and that have both participants
+        stmt = (
+            select(Conversations)
+            .where(Conversations.type == "direct")
+        )
+        conversations = (await self.db.execute(stmt)).scalars().all()
+
+        # Filter in python: ensure the participants set matches exactly {user_a, user_b}
+        for conv in conversations:
+            parts_stmt = select(ConversationsParticipants.user_id).where(ConversationsParticipants.conversation_id == conv.id)
+            part_ids = set((await self.db.execute(parts_stmt)).scalars().all())
+            if part_ids == {user_a, user_b}:
+                return conv
+        return None

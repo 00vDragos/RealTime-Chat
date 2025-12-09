@@ -1,33 +1,29 @@
 import SideBar from "./components/layout/SideBar";
-import { useState } from "react";
-import { chats } from "./mockData";
 import Navbar from "./components/layout/NavBar";
 import MessagesList from "./components/ui/MessagesList";
 import MessagesInput from "./components/ui/MessagesInput";
-import type { Message } from "./types";
+import { chats } from "./mockData";
+import { useChatMessages } from "../../hooks/useChatMessages";
 
 export default function ChatPage() {
-    const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-    const [messageInput, setMessageInput] = useState("");
-    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-    const [chatState] = useState(chats);
-    const selectedChat = chatState.find((c) => c.id === selectedChatId);
-
-    // Handler for editing a message
-    const handleEditMessage = (msg: Message) => {
-        setEditingMessageId(msg.id);
-        setMessageInput(msg.text);
-    };
-
-    // Handler for sending or editing a message
-    const handleSend = () => {
-    };
+    const {
+        chatsState,
+        selectedChatId,
+        setSelectedChatId,
+        selectedChat,
+        messageInput,
+        setMessageInput,
+        editingMessageId,
+        handleEditStart,
+        handleSend,
+        handleDelete,
+    } = useChatMessages(chats);
 
     return (
         <div className="flex h-screen">
             {/* Sidebar */}
             <SideBar
-                chats={chatState}
+                chats={chatsState}
                 selectedChatId={selectedChatId}
                 setSelectedChatId={setSelectedChatId}
             />
@@ -40,7 +36,8 @@ export default function ChatPage() {
                     {selectedChat ? (
                         <MessagesList
                             messages={selectedChat.messages}
-                            onEdit={handleEditMessage}
+                            onEdit={handleEditStart}
+                            onDelete={handleDelete}
                         />
                     ) : (
                         <div className="flex-1 flex items-center justify-center text-[rgb(var(--muted-foreground))]">
@@ -56,7 +53,7 @@ export default function ChatPage() {
                         setValue={setMessageInput}
                         onSend={handleSend}
                         isEditing={!!editingMessageId}
-                        cancelEdit={() => { setEditingMessageId(null); setMessageInput(""); }}
+                        cancelEdit={() => { setMessageInput(""); }}
                     />
                 )}
             </div>

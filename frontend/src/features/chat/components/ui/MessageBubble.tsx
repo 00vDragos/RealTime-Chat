@@ -51,7 +51,7 @@ export default function MessageBubble({ message, onEdit, onDelete }: MessageBubb
               <div className="font-semibold text-xs text-[rgb(var(--muted-foreground))] mb-1">{message.sender}</div>
               <div className="text-[rgb(var(--foreground))]">{message.text}</div>
               <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right">
-                {message.time}
+                {message.time} {message.isEdited ? <span className="italic">· Edited</span> : null}
               </div>
             </>
           )}

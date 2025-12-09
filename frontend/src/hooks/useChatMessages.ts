@@ -6,26 +6,9 @@ import {
   editMessage as apiEditMessage,
   deleteMessage as apiDeleteMessage,
   updateLastRead,
-  type BackendMessage,
 } from "../lib/api";
-
-const USER_ID = "1eb0fa76-fad3-4dd2-9536-ec257c29bba3";
-
-function formatTime(iso: string) {
-  const d = new Date(iso);
-  return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
-}
-
-function mapBackendToMessage(bm: BackendMessage, userId: string): Message {
-  return {
-    id: bm.id,
-    // Show name for others; keep "Me" for own messages to preserve UI logic
-    sender: bm.sender_id === userId ? "Me" : (bm.sender_name || bm.sender_id),
-    text: bm.body,
-    time: formatTime(bm.created_at),
-    isDeleted: bm.deleted_for_everyone,
-  };
-}
+import { USER_ID } from "@/lib/chat/constants";
+import { mapBackendToMessage } from "@/lib/chat/mapBackendToMessage";
 
 export function useChatMessages(initialChats: Chat[]) {
   const [chatsState, setChatsState] = useState<Chat[]>(initialChats);
@@ -119,7 +102,9 @@ export function useChatMessages(initialChats: Chat[]) {
       } catch (e) {
         console.warn("Failed to send to backend, appending locally", e);
         const nowIso = new Date().toISOString();
-        const localMsg: Message = { id: crypto.randomUUID(), sender: "Me", text: body, time: formatTime(nowIso) };
+        const hh = new Date(nowIso).getHours().toString().padStart(2, "0");
+        const mm = new Date(nowIso).getMinutes().toString().padStart(2, "0");
+        const localMsg: Message = { id: crypto.randomUUID(), sender: "Me", text: body, time: `${hh}:${mm}` };
         setChatsState((prev) => {
           const updated = prev.map((c) => (
             c.id === selectedChatId
@@ -139,7 +124,14 @@ export function useChatMessages(initialChats: Chat[]) {
     (async () => {
       try {
         await apiDeleteMessage(selectedChatId, msg.id, USER_ID);
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: c.messages.filter((m) => m.id !== msg.id) } : c)));
+        // Mark as deleted locally so UI shows the deleted label immediately
+        setChatsState((prev) =>
+          prev.map((c) =>
+            c.id === selectedChatId
+              ? { ...c, messages: c.messages.map((m) => (m.id === msg.id ? { ...m, isDeleted: true, text: "" } : m)) }
+              : c
+          )
+        );
       } catch (e) {
         console.warn("Failed to delete via backend, marking locally", e);
         setChatsState((prev) =>

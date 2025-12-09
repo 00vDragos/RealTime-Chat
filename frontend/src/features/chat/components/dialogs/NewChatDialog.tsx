@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCirclePlus } from "lucide-react";
 
 import { listMyFriends, type Friend } from "@/lib/api";
+import { FriendListItem } from "./FriendListItem";
 
 export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: (number | string)[]) => void }) {
   const [open, setOpen] = useState(false);
@@ -84,34 +84,9 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: (nu
             {loading && <div className="text-[rgb(var(--muted-foreground))] text-center">Loading...</div>}
             {error && <div className="text-[rgb(var(--destructive))] text-center">{error}</div>}
             {!loading && !error && filtered.length === 0 && <div className="text-[rgb(var(--muted-foreground))] text-center">No friends found</div>}
-            {filtered.map(friend => {
-              const isSelected = selected.includes(friend.id);
-              const name = friend.display_name ?? friend.email;
-              const initial = (name || "").trim().charAt(0).toUpperCase() || "?";
-              return (
-                <Button
-                  key={friend.id}
-                  variant={isSelected ? "secondary" : "ghost"}
-                  className={`w-full flex items-center gap-3 justify-start ${isSelected ? 'ring-2 ring-[rgb(var(--primary))] ring-offset-2 ring-offset-[rgb(var(--card))]' : ''}`}
-                  onClick={() => toggleSelect(friend.id)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    readOnly
-                    className="mr-2 accent-[rgb(var(--primary))]"
-                    tabIndex={-1}
-                    style={{ pointerEvents: 'none' }}
-                  />
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-[rgb(var(--primary))] text-white">
-                      {initial}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium text-[rgb(var(--foreground))]">{name}</span>
-                </Button>
-              );
-            })}
+            {filtered.map(friend => (
+              <FriendListItem key={friend.id} friend={friend} selected={selected.includes(friend.id)} onToggle={toggleSelect} />
+            ))}
           </div>
         </ScrollArea>
 

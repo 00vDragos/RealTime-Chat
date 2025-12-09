@@ -11,9 +11,10 @@ import { Pencil, Trash2, Info, SmilePlus  } from "lucide-react";
 type MessageBubbleProps = {
   message: Message;
   onEdit?: (msg: Message) => void;
+  onDelete?: (msg: Message) => void;
 };
 
-export default function MessageBubble({ message, onEdit }: MessageBubbleProps) {
+export default function MessageBubble({ message, onEdit, onDelete }: MessageBubbleProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
 
@@ -29,8 +30,7 @@ export default function MessageBubble({ message, onEdit }: MessageBubbleProps) {
 
   const handleDelete = () => {
     setMenuOpen(false);
-    // TODO: Implement delete logic
-    alert("Delete message");
+    if (onDelete) onDelete(message);
   };
 
   return (
@@ -50,7 +50,9 @@ export default function MessageBubble({ message, onEdit }: MessageBubbleProps) {
             <>
               <div className="font-semibold text-xs text-[rgb(var(--muted-foreground))] mb-1">{message.sender}</div>
               <div className="text-[rgb(var(--foreground))]">{message.text}</div>
-              <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right">{message.time}</div>
+              <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right">
+                {message.time}
+              </div>
             </>
           )}
         </div>
@@ -65,12 +67,16 @@ export default function MessageBubble({ message, onEdit }: MessageBubbleProps) {
             <DropdownMenuItem className="flex items-center gap-2">
               <SmilePlus className="w-4 h-4 mr-2" /> React
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
-              <Pencil className="w-4 h-4 mr-2" /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete} className="flex items-center gap-2 text-red-600 focus:text-red-600">
-              <Trash2 className="w-4 h-4 mr-2" /> Delete
-            </DropdownMenuItem>
+            {message.sender === 'Me' && (
+              <>
+                <DropdownMenuItem onClick={handleEdit} className="flex items-center gap-2">
+                  <Pencil className="w-4 h-4 mr-2" /> Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className="flex items-center gap-2 text-red-600 focus:text-red-600">
+                  <Trash2 className="w-4 h-4 mr-2" /> Delete
+                </DropdownMenuItem>
+              </>
+            )}
           </>
         )}
       </DropdownMenuContent>

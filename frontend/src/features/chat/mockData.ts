@@ -2,7 +2,7 @@ import type { Chat } from "./types";
 
 export const chats: Chat[] = [
   {
-    id: "1",
+    id: "c4264fb0-5964-4a0b-a4fc-2cca8b089e61",
     name: 'John Doe',
     avatar: 'JD',
     lastMessage: 'Hey, how are you doing?',
@@ -15,7 +15,7 @@ export const chats: Chat[] = [
     ],
   },
   {
-    id: "2",
+    id: "ef91e9e8-34a7-4335-82eb-acd5bdf8d31c",
     name: 'Sarah Smith',
     avatar: 'SS',
     lastMessage: 'See you tomorrow!',
@@ -28,7 +28,7 @@ export const chats: Chat[] = [
     ],
   },
   {
-    id: "3",
+    id: "fe3a6a12-a656-443e-ad74-32754924b224",
     name: 'Team Project',
     avatar: 'TP',
     lastMessage: 'The deadline is next week',

@@ -2,6 +2,7 @@ from uuid import UUID
 from app.db.repositories.conversation_repo import ConversationRepository
 
 
+
 class ConversationService:
     def __init__(self, repo: ConversationRepository):
         self.repo = repo
@@ -32,3 +33,41 @@ class ConversationService:
             })
 
         return result
+
+    async def create_conversation(self, current_user_id: UUID, participant_ids: list[UUID]):
+        
+        participants = list(participant_ids) if participant_ids is not None else []
+        if current_user_id not in participants:
+            participants.append(current_user_id)
+
+        # Validate there is at least one other participant
+        others = [pid for pid in participants if pid != current_user_id]
+        if not others:
+            raise ValueError("participant_ids must include at least one other participant")
+
+        # Determine conversation type: direct for exactly 2 participants, otherwise group
+        conversation_type = "direct" if len(participants) == 2 else "group"
+
+        # Create the conversation
+        conversation = await self.repo.create_conversation(conversation_type, participants)
+
+        if conversation_type == "direct":
+            # Pick the other participant as 'friend' for direct convo summary
+            friend_id = others[0]
+            friend = await self.repo.get_user(friend_id)
+            friend_name = friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown"
+            friend_id_out = str(friend_id)
+        else:
+            # Group conversation summary
+            friend_name = f"Group ({len(participants)} members)"
+            friend_id_out = None
+
+        summary = {
+            "id": str(conversation.id),
+            "friendId": friend_id_out,
+            "friendName": friend_name,
+            "lastMessage": None,
+            "lastMessageTime": None,
+            "unreadCount": 0
+        }
+        return summary

@@ -7,6 +7,7 @@ from app.db.session import Base
 class users(Base):
     __tablename__ = "users"
 
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True, nullable=False)
     display_name = Column(String, nullable=False)

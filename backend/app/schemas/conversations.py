@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -21,3 +21,16 @@ class ConversationRead(ConversationBase):
 
     class Config:
         orm_mode = True
+
+
+
+
+class ConversationSummary(BaseModel):
+    id: uuid.UUID
+    friend_id: uuid.UUID = Field(alias="friendId")
+    friend_name: str = Field(alias="friendName")
+    last_message: str | None = Field(alias="lastMessage")
+    last_message_time: datetime | None = Field(alias="lastMessageTime")
+    unread_count: int = Field(alias="unreadCount")
+
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

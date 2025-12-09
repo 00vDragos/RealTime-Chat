@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.repositories.conversation_participants.get_all_participants import get_participants
 from app.services.conversation_participants.get_participant_name import get_participant_name_service
 from app.websocket.manager import manager
+from app.db.repositories.messages.get_message import get_message
 
 router = APIRouter()
 
@@ -30,6 +31,13 @@ async def update_last_read(
     try:
         if not await is_conversation_participant_service(db, conversation_id, user_id):
             raise HTTPException(status_code=403, detail="Not a participant")
+
+        # Prevent marking a message as seen by its sender
+        msg = await get_message(db, message_id)
+        if not msg:
+            raise HTTPException(status_code=404, detail="Message not found")
+        if msg.sender_id == user_id:
+            raise HTTPException(status_code=400, detail="Sender cannot mark own message as seen")
 
         updated = await update_last_read_service(
             db=db,

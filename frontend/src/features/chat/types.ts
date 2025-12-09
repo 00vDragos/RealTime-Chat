@@ -5,6 +5,7 @@ export type Message = {
   time: string;
   isDeleted?: boolean;
   isEdited?: boolean;
+  status?: "sent" | "delivered" | "seen";
 };
 
 export type Chat = {

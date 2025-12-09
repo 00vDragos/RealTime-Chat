@@ -50,8 +50,14 @@ export default function MessageBubble({ message, onEdit, onDelete }: MessageBubb
             <>
               <div className="font-semibold text-xs text-[rgb(var(--muted-foreground))] mb-1">{message.sender}</div>
               <div className="text-[rgb(var(--foreground))]">{message.text}</div>
-              <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right">
-                {message.time} {message.isEdited ? <span className="italic">· Edited</span> : null}
+              <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right flex items-center gap-1 justify-end">
+                <span>{message.time}</span>
+                {message.isEdited ? <span className="italic">· Edited</span> : null}
+                {message.sender === 'Me' && (
+                  <span aria-label={message.status === 'seen' ? 'Seen' : message.status === 'delivered' ? 'Delivered' : 'Sent'}>
+                    {message.status === 'seen' ? '✓✓' : message.status === 'delivered' ? '✓' : '✓'}
+                  </span>
+                )}
               </div>
             </>
           )}

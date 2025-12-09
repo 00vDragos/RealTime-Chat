@@ -5,6 +5,8 @@ from uuid import UUID
 from app.models.conversations import Conversations
 from app.models.conversation_participants import ConversationsParticipants
 from app.models.users import users
+from app.models.messages import Message
+from sqlalchemy import func
 
 
 class ConversationRepository:
@@ -23,6 +25,32 @@ class ConversationRepository:
             .order_by(Conversations.last_message_created_at.desc())
         )
         return (await self.db.execute(stmt)).scalars().all()
+
+    async def get_last_read_message_id(self, conversation_id: UUID, user_id: UUID):
+        stmt = (
+            select(ConversationsParticipants.last_read_message_id)
+            .where(
+                ConversationsParticipants.conversation_id == conversation_id,
+                ConversationsParticipants.user_id == user_id,
+            )
+        )
+        return (await self.db.execute(stmt)).scalar()
+
+    async def count_unread_messages(self, conversation_id: UUID, user_id: UUID, last_read_message_id: UUID | None):
+        # Count messages after last_read that were sent by others and not deleted
+        # If last_read_message_id is None, count all messages from others
+        base = select(func.count()).select_from(Message).where(
+            Message.conversation_id == conversation_id,
+            Message.sender_id != user_id,
+            Message.deleted_for_everyone == False,  # noqa: E712
+        )
+        if last_read_message_id:
+            # Get timestamp of last read message and count those created after
+            ts_stmt = select(Message.created_at).where(Message.id == last_read_message_id)
+            ts = (await self.db.execute(ts_stmt)).scalar()
+            if ts:
+                base = base.where(Message.created_at > ts)
+        return (await self.db.execute(base)).scalar() or 0
 
     async def get_other_participant(self, conversation_id: UUID, user_id: UUID):
         """

@@ -23,13 +23,17 @@ class ConversationService:
             if preview.strip().lower() == "__deleted__":
                 preview = "(deleted message)"
 
+            # Unread count: messages after last_read, sent by others
+            last_read_id = await self.repo.get_last_read_message_id(conv.id, current_user_id)
+            unread_count = await self.repo.count_unread_messages(conv.id, current_user_id, last_read_id)
+
             result.append({
                 "id": str(conv.id),
                 "friendId": str(friend_id),
                 "friendName": friend.display_name if friend else "Unknown",
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
-                "unreadCount": 0
+                "unreadCount": unread_count
             })
 
         return result

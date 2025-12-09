@@ -37,6 +37,10 @@ export function useChatMessages(initialChats: Chat[]) {
           .at(-1);
         if (lastOtherMsg) {
           await updateLastRead(selectedChatId, USER_ID, lastOtherMsg.id);
+          // Zero unread locally for the selected chat after marking last read
+          setChatsState((prev) => prev.map((c) => (
+            c.id === selectedChatId ? { ...c, unread: 0 } : c
+          )));
         }
       } catch (e) {
         console.warn("Failed to fetch messages, using local data", e);

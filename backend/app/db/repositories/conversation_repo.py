@@ -4,7 +4,7 @@ from uuid import UUID
 
 from app.models.conversations import Conversations
 from app.models.conversation_participants import ConversationsParticipants
-from app.models.users import users, User
+from app.models.users import User
 from app.models.messages import Message
 from sqlalchemy import func
 

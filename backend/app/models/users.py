@@ -11,7 +11,7 @@ class User(Base):
     display_name = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     provider = Column(String, nullable=True)  # e.g., 'google', 'facebook'
-    provider_id = Column(String, unique=True, nullable=True)  # ID from the OAuth provider
+    provider_sub = Column(String, unique=True, nullable=True)  # provider-specific subject/ID
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)  # ISO formatted datetime string
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False) 
 

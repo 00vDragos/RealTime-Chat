@@ -1,11 +1,9 @@
 repos:
-# Optional: use system-installed `ruff` instead of the downloaded binary to avoid Windows
-# 'unknown publisher' prompts. This requires `ruff` to be in your PATH (installed in your venv).
   - repo: local
     hooks:
       - id: ruff-system
         name: ruff (system)
-        entry: ruff
+        entry: py -m ruff          # 👈 use the Python launcher
         language: system
         types: [python]
         args: ["check", "--fix"]

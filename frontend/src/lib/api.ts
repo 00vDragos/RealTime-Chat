@@ -1,13 +1,20 @@
+import { getStoredAccessToken } from '@/features/auth/storage';
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchJson<T>(path: string, init: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+  const accessToken = getStoredAccessToken();
+  const headers = new Headers(init.headers || {});
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
   const res = await fetch(url, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers || {}),
-    },
+    headers,
     credentials: init.credentials ?? 'include',
   });
   if (!res.ok) {

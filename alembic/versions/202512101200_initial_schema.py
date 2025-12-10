@@ -29,7 +29,7 @@ def upgrade() -> None:
         sa.Column("display_name", sa.String(), nullable=True),
         sa.Column("avatar_url", sa.String(), nullable=True),
         sa.Column("provider", sa.String(), nullable=True),
-        sa.Column("provider_id", sa.String(), nullable=True),
+        sa.Column("provider_sub", sa.String(), nullable=True),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -44,7 +44,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
-        sa.UniqueConstraint("provider_id"),
+        sa.UniqueConstraint("provider_sub"),
     )
     op.create_index("idx_users_email", "users", ["email"], unique=False)
 

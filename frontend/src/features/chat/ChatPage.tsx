@@ -35,7 +35,7 @@ export default function ChatPage() {
 
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col bg-[rgb(var(--sidebar))]">
-                <Navbar name={selectedChat?.name} />
+                <Navbar name={selectedChat?.name} avatar={selectedChat?.avatar ?? null} />
 
                 <div className="flex-1 flex flex-col p-6 pb-1 overflow-y-auto">
                     {selectedChat ? (

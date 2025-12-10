@@ -29,6 +29,7 @@ class ConversationSummary(BaseModel):
     id: uuid.UUID
     friend_id: uuid.UUID = Field(alias="friendId")
     friend_name: str = Field(alias="friendName")
+    friend_avatar: str | None = Field(alias="friendAvatar", default=None)
     last_message: str | None = Field(alias="lastMessage")
     last_message_time: datetime | None = Field(alias="lastMessageTime")
     unread_count: int = Field(alias="unreadCount")

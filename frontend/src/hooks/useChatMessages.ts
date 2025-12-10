@@ -7,14 +7,15 @@ import {
   deleteMessage as apiDeleteMessage,
   updateLastRead,
 } from "../lib/api";
-import { USER_ID } from "@/lib/chat/constants";
 import { mapBackendToMessage } from "@/lib/chat/mapBackendToMessage";
+import { useAuthUserId } from "@/features/auth/useAuthSession";
 
 export function useChatMessages(initialChats: Chat[]) {
   const [chatsState, setChatsState] = useState<Chat[]>(initialChats);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const userId = useAuthUserId();
 
   const selectedChat = useMemo(() => chatsState.find((c) => c.id === selectedChatId) || null, [chatsState, selectedChatId]);
 
@@ -24,19 +25,19 @@ export function useChatMessages(initialChats: Chat[]) {
   }, [initialChats]);
 
   useEffect(() => {
-    if (!selectedChatId) return;
+    if (!selectedChatId || !userId) return;
     (async () => {
       try {
-        const backendMessages = await getMessages(selectedChatId, USER_ID);
-        const mapped = backendMessages.map((m) => mapBackendToMessage(m, USER_ID));
+        const backendMessages = await getMessages(selectedChatId, userId);
+        const mapped = backendMessages.map((m) => mapBackendToMessage(m, userId));
         setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: mapped } : c)));
 
         const lastOtherMsg = backendMessages
-          .filter((m) => m.sender_id !== USER_ID)
+          .filter((m) => m.sender_id !== userId)
           .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
           .at(-1);
         if (lastOtherMsg) {
-          await updateLastRead(selectedChatId, USER_ID, lastOtherMsg.id);
+          await updateLastRead(selectedChatId, userId, lastOtherMsg.id);
           // Zero unread locally for the selected chat after marking last read
           setChatsState((prev) => prev.map((c) => (
             c.id === selectedChatId ? { ...c, unread: 0 } : c
@@ -46,7 +47,7 @@ export function useChatMessages(initialChats: Chat[]) {
         console.warn("Failed to fetch messages, using local data", e);
       }
     })();
-  }, [selectedChatId]);
+  }, [selectedChatId, userId]);
 
   const handleEditStart = useCallback((msg: Message) => {
     setEditingMessageId(msg.id);
@@ -54,14 +55,14 @@ export function useChatMessages(initialChats: Chat[]) {
   }, []);
 
   const handleSend = useCallback(() => {
-    if (!selectedChatId || !messageInput.trim()) return;
+    if (!selectedChatId || !messageInput.trim() || !userId) return;
     const body = messageInput.trim();
 
     if (editingMessageId) {
       (async () => {
         try {
-          const updated = await apiEditMessage(selectedChatId, editingMessageId, USER_ID, body);
-          const mapped = mapBackendToMessage(updated, USER_ID);
+          const updated = await apiEditMessage(selectedChatId, editingMessageId, userId, body);
+          const mapped = mapBackendToMessage(updated, userId);
           setChatsState((prev) =>
             prev.map((c) =>
               c.id === selectedChatId
@@ -88,8 +89,8 @@ export function useChatMessages(initialChats: Chat[]) {
 
     (async () => {
       try {
-        const created = await apiSendMessage(selectedChatId, USER_ID, body);
-        const newMsg = mapBackendToMessage(created, USER_ID);
+        const created = await apiSendMessage(selectedChatId, userId, body);
+        const newMsg = mapBackendToMessage(created, userId);
         setChatsState((prev) => {
           const updated = prev.map((c) => (
             c.id === selectedChatId
@@ -121,13 +122,13 @@ export function useChatMessages(initialChats: Chat[]) {
         setMessageInput("");
       }
     })();
-  }, [selectedChatId, messageInput, editingMessageId]);
+  }, [selectedChatId, messageInput, editingMessageId, userId]);
 
   const handleDelete = useCallback((msg: Message) => {
-    if (!selectedChatId) return;
+    if (!selectedChatId || !userId) return;
     (async () => {
       try {
-        await apiDeleteMessage(selectedChatId, msg.id, USER_ID);
+        await apiDeleteMessage(selectedChatId, msg.id, userId);
         // Mark as deleted locally so UI shows the deleted label immediately
         setChatsState((prev) =>
           prev.map((c) =>
@@ -147,10 +148,9 @@ export function useChatMessages(initialChats: Chat[]) {
         );
       }
     })();
-  }, [selectedChatId]);
+  }, [selectedChatId, userId]);
 
   return {
-    USER_ID,
     chatsState,
     selectedChatId,
     setSelectedChatId,

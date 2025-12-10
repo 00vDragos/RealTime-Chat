@@ -110,21 +110,24 @@ export type ConversationSummary = {
   id: string;
   friendId: string;
   friendName: string;
+  friendAvatar?: string | null;
   lastMessage: string;
   lastMessageTime: string; // ISO
   unreadCount: number;
 };
 
-export async function listConversations(): Promise<ConversationSummary[]> {
+export async function listConversations(userId: string): Promise<ConversationSummary[]> {
   // Endpoint defined with router prefix "/api/messages"
   return fetchJson<ConversationSummary[]>(`/api/messages/conversations`, {
     method: 'GET',
+    headers: { 'user-id': userId },
   });
 }
 
-export async function createConversation(participantIds: string[]) {
+export async function createConversation(participantIds: string[], userId: string) {
   return fetchJson(`/api/messages/new_conversation`, {
     method: 'POST',
+    headers: { 'user-id': userId },
     body: JSON.stringify({ participant_ids: participantIds }),
   });
 }

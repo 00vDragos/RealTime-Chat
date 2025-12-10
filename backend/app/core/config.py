@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # Fallback pieces to compose a DATABASE_URL when DATABASE_URL is not provided
     POSTGRES_USER: Optional[str] = None
     POSTGRES_PASSWORD: Optional[str] = None
-    POSTGRES_HOST: str = "localhost"
+    POSTGRES_HOST: str = "postgres"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "chat_db"
     

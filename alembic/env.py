@@ -17,16 +17,18 @@ fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
-# Import models so that `Base.metadata` is populated for autogenerate.
 # Alembic's autogenerate only sees tables that have been imported into SQLAlchemy's
 # metadata at runtime. Import the app's model modules here to ensure they are registered.
 try:
-    # explicit imports for all model modules
-    pass
-except Exception:
-    # If imports fail due to PYTHONPATH or environment, Alembic will still run but
-    # autogenerate may produce empty migrations. Make sure to run Alembic from
-    # project root or set PYTHONPATH so `app` is importable.
+    import backend.app.models.users
+    import backend.app.models.friend_requests
+    import backend.app.models.friendships
+    import backend.app.models.messages
+    import backend.app.models.message_deletions
+    import backend.app.models.conversations
+    import backend.app.models.refresh_tokens
+    import backend.app.models.conversation_participants
+except Exception :
     pass
 
 # Use DATABASE_URL from settings (or environment)

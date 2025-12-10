@@ -52,13 +52,13 @@ async def authenticate_google_user(
                 detail=f"Failed to get user info: {str(e)}"
             )
         
-        google_sub = user_info.get("id")
+        google_id = user_info.get("id")
         email = user_info.get("email")
         name = user_info.get("name")
         picture = user_info.get("picture")
         email_verified = user_info.get("verified_email", False)
         
-        if not google_sub or not email:
+        if not google_id or not email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid user data received from Google"
@@ -71,7 +71,7 @@ async def authenticate_google_user(
             )
         
         user = await _find_or_create_user(
-            google_sub=google_sub,
+            google_id=google_id,
             email=email,
             name=name,
             picture=picture,
@@ -80,7 +80,7 @@ async def authenticate_google_user(
         
         access_token = create_access_token(
             data={
-                "sub": str(user.id),
+                "id": str(user.id),
                 "email": user.email
             }
         )
@@ -97,14 +97,14 @@ async def authenticate_google_user(
                 "display_name": user.display_name,
                 "avatar_url": user.avatar_url,
                 "provider": user.provider,
-                "provider_sub": user.provider_sub,
+                "provider_id": user.provider_id,
                 "created_at": user.created_at.isoformat() if user.created_at else None,
                 "updated_at": user.updated_at.isoformat()
             }
         }
     
 async def _find_or_create_user(
-    google_sub: str,
+    google_id: str,
     email: str,
     name: Optional[str],
     picture: Optional[str],
@@ -112,7 +112,7 @@ async def _find_or_create_user(
     """Find existing registered user with Google account or create a new one"""
     
     result = await db.execute(
-        select(User).where(User.provider_sub == google_sub)
+        select(User).where(User.provider_id == google_id)
     )
     user = result.scalar_one_or_none()
     
@@ -137,7 +137,7 @@ async def _find_or_create_user(
             )
         
         existing_user.provider = 'google'
-        existing_user.provider_sub = google_sub
+        existing_user.provider_id = google_id
         existing_user.display_name = name or existing_user.display_name
         existing_user.avatar_url = picture or existing_user.avatar_url
         existing_user.updated_at = datetime.now(timezone.utc)
@@ -152,7 +152,7 @@ async def _find_or_create_user(
         display_name=name,
         avatar_url=picture,
         provider='google',
-        provider_sub=google_sub,
+        provider_id=google_id,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc)
     )

@@ -52,7 +52,7 @@ async def refresh_access_token(
                 detail="User not found"
             )
         
-        access_token = create_access_token(data={"sub": str(user.id), "email": user.email})
+        access_token = create_access_token(data={"id": str(user.id), "email": user.email})
         
         return {
             "access_token": access_token,

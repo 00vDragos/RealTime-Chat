@@ -3,7 +3,7 @@ from typing import ClassVar
 
 from sqlalchemy import Column, Text, TIMESTAMP, Index, Boolean
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
-from app.db.session import Base
+from backend.app.db.session import Base
 from sqlalchemy import ForeignKey
 
 class Message(Base):

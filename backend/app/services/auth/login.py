@@ -36,7 +36,7 @@ async def login_user(
                 detail="Invalid email or password"
             )
         
-        access_token = create_access_token(data={"sub": str(user.id), "email": user.email})
+        access_token = create_access_token(data={"id": str(user.id), "email": user.email})
         
         refresh_token = await create_refresh_token(user.id, db)
         
@@ -50,7 +50,7 @@ async def login_user(
                 "display_name": user.display_name,
                 "avatar_url": user.avatar_url,
                 "provider": user.provider,
-                "provider_sub": user.provider_sub,
+                "provider_id": user.provider_id,
                 "created_at": user.created_at.isoformat() if user.created_at else None,
                 "updated_at": user.updated_at.isoformat()
             }

@@ -33,9 +33,13 @@ from app.websocket.router import router as websocket_router
 
 app = FastAPI(title=settings.APP_NAME)
 
+configured_origins = [origin.strip().rstrip("/") for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()]
+if not configured_origins and settings.FRONTEND_URL:
+    configured_origins = [settings.FRONTEND_URL.rstrip("/")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=configured_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

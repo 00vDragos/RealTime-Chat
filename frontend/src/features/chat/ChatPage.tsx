@@ -18,6 +18,7 @@ export default function ChatPage() {
         handleEditStart,
         handleSend,
         handleDelete,
+        typingParticipants,
     } = useChatMessages(conversations);
 
     return (
@@ -52,6 +53,11 @@ export default function ChatPage() {
                 </div>
 
                 {/* Message Input */}
+                {selectedChat && typingParticipants.length > 0 && (
+                    <div className="px-6 pb-2 text-sm text-[rgb(var(--muted-foreground))]">
+                        {`${typingParticipants.map((entry) => entry.userName || "Someone").join(", ")} ${typingParticipants.length > 1 ? "are" : "is"} typing...`}
+                    </div>
+                )}
                 {selectedChat && (
                     <MessagesInput
                         value={messageInput}

@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { Chat } from "../../types";
+import { formatConversationTimestamp } from "@/lib/utils";
 
 type ConversationCardProps = {
     chat: Chat;
@@ -20,7 +21,7 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
             {/* Avatar */}
             <Avatar className="h-12 w-12">
                 <AvatarFallback className="bg-[rgb(var(--destructive))] text-[rgb(var(--foreground))]">
-                    {chat.avatar}
+                    {(chat.avatar || chat.name?.trim().charAt(0)?.toUpperCase() || "?")}
                 </AvatarFallback>
             </Avatar>
 
@@ -31,7 +32,7 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
                         {chat.name}
                     </h3>
                     <span className="text-xs text-[rgb(var(--muted-foreground))] ml-2">
-                        {chat.timestamp}
+                        {formatConversationTimestamp(chat.timestamp)}
                     </span>
                 </div>
                 <div className="flex items-center justify-between">

@@ -40,6 +40,7 @@ export type BackendMessage = {
   id: string;
   conversation_id: string;
   sender_id: string;
+  sender_name?: string;
   body: string;
   created_at: string; // ISO
   delivered_at?: Record<string, unknown> | null;
@@ -90,6 +91,50 @@ export async function updateLastRead(conversationId: string, userId: string, mes
   const params = new URLSearchParams({ message_id: messageId });
   return fetchJson(`/conversations/${conversationId}/read?${params.toString()}`, {
     method: 'POST',
+    headers: { 'user-id': userId },
+  });
+}
+
+// ------------------------------------------------------------------
+// Conversations API
+// ------------------------------------------------------------------
+// Matches backend response from GET /api/messages/conversations
+export type ConversationSummary = {
+  id: string;
+  friendId: string;
+  friendName: string;
+  lastMessage: string;
+  lastMessageTime: string; // ISO
+  unreadCount: number;
+};
+
+export async function listConversations(): Promise<ConversationSummary[]> {
+  // Endpoint defined with router prefix "/api/messages"
+  return fetchJson<ConversationSummary[]>(`/api/messages/conversations`, {
+    method: 'GET',
+  });
+}
+
+export async function createConversation(participantIds: string[]) {
+  return fetchJson(`/api/messages/new_conversation`, {
+    method: 'POST',
+    body: JSON.stringify({ participant_ids: participantIds }),
+  });
+}
+
+// ------------------------------------------------------------------
+// Friends API
+// ------------------------------------------------------------------
+export type Friend = {
+  id: string;
+  email: string;
+  display_name?: string;
+  avatar_url?: string | null;
+};
+
+export async function listMyFriends(userId: string): Promise<Friend[]> {
+  return fetchJson<Friend[]>(`/api/friends/list`, {
+    method: 'GET',
     headers: { 'user-id': userId },
   });
 }

@@ -39,7 +39,8 @@ async def delete_message(
         if not deletion:
             raise HTTPException(status_code=400, detail="Unable to delete message")
 
-        deletion.sender_name = await get_participant_name_service(db, deletion.sender_id)
+        # Get name of the user who performed the deletion
+        deletor_name = await get_participant_name_service(db, user_id)
 
         participants = await get_participants(db, conversation_id)
         participant_ids = [str(p.user_id) for p in participants]
@@ -51,7 +52,7 @@ async def delete_message(
                 "conversation_id": str(conversation_id),
                 "message_id": str(message_id),
                 "deleted_by": str(user_id),
-                "deletor_name": deletion.sender_name,
+                "deletor_name": deletor_name,
             },
         )
 

@@ -9,9 +9,9 @@ class UserBase(BaseModel):
     display_name: Optional[str] = None
     avatar_url: Optional[str] = None
     provider: Optional[str] = None
-    provider_sub: Optional[str] = None
+    provider_id: Optional[str] = None
 
-
+      
 class UserRead(UserBase):
     id: uuid.UUID
     created_at: Optional[datetime] = None

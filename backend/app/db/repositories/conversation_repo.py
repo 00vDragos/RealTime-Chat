@@ -4,7 +4,7 @@ from uuid import UUID
 
 from app.models.conversations import Conversations
 from app.models.conversation_participants import ConversationsParticipants
-from app.models.users import users
+from app.models.users import users, User
 from app.models.messages import Message
 from sqlalchemy import func
 
@@ -69,7 +69,7 @@ class ConversationRepository:
         """
         Load user info (display_name, avatar, etc.)
         """
-        stmt = select(users).where(users.id == user_id)
+        stmt = select(User).where(User.id == user_id)
         return (await self.db.execute(stmt)).scalars().first()
 
     async def create_conversation(self, conversation_type: str, participant_ids: list[UUID]):

@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, String, DateTime, func
+from sqlalchemy import Column, String, DateTime, func, Index
 from app.db.session import Base
 
 class User(Base):
@@ -18,4 +18,8 @@ class User(Base):
     __table_args__ = (
         Index("idx_users_email", "email"),
     )
+
+
+# Provide table metadata alias expected by repositories
+users = User.__table__
 

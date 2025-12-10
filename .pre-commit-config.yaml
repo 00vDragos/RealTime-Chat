@@ -1,9 +1,6 @@
 repos:
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.0   # or the latest release
     hooks:
-      - id: ruff-system
-        name: ruff (system)
-        entry: py -m ruff          # 👈 use the Python launcher
-        language: system
-        types: [python]
-        args: ["check", "--fix"]
+      - id: ruff
+        args: ["--fix"]

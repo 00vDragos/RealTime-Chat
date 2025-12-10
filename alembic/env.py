@@ -8,8 +8,8 @@ from alembic import context
 
 # Import your settings and models metadata
 # Make sure PYTHONPATH allows 'app' import (when running locally set PYTHONPATH='backend')
-from app.core.config import settings
-from app.db.session import Base  # Base.metadata is target_metadata
+from backend.app.core.config import settings
+from backend.app.db.session import Base  # Base.metadata is target_metadata
 
 # this loads the alembic.ini config
 config = context.config

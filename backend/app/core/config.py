@@ -3,9 +3,6 @@ from dotenv import load_dotenv
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-
-
 load_dotenv()
 
 class Settings(BaseSettings):
@@ -25,7 +22,27 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: Optional[str] = None
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
-    POSTGRES_DB: str = "postgres"
+    POSTGRES_DB: str = "chat_db"
+    
+    #JWT
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str = 'HS256'
+    JWT_TOKEN_AVAILABILITY_MIN: int 
+    REFRESH_TOKEN_AVAILABILITY_MIN: int 
+    
+    #GOOGLE AUTH
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    GOOGLE_REDIRECT_URI: str
+    GOOGLE_SCOPES: str
+    
+    FRONTEND_URL: str
+    BACKEND_URL: str
+    ALLOWED_ORIGINS: str
+    
+    #FRONTED
+    VITE_GOOGLE_CLIENT_ID: str
+    VITE_API_URL: str
 
     # Returns an asyncpg-compatible SQLAlchemy URL. Prefers `DATABASE_URL`.
     @property

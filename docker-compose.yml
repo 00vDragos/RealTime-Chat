@@ -10,7 +10,9 @@ services:
     volumes:
       - ./backend:/app/backend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
 
 
   frontend:
@@ -35,6 +37,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chat -d chat_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:

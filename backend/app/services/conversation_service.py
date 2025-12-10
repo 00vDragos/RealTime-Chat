@@ -23,13 +23,17 @@ class ConversationService:
             if preview.strip().lower() == "__deleted__":
                 preview = "(deleted message)"
 
+            # Unread count: messages after last_read, sent by others
+            last_read_id = await self.repo.get_last_read_message_id(conv.id, current_user_id)
+            unread_count = await self.repo.count_unread_messages(conv.id, current_user_id, last_read_id)
+
             result.append({
                 "id": str(conv.id),
                 "friendId": str(friend_id),
                 "friendName": friend.display_name if friend else "Unknown",
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
-                "unreadCount": 0
+                "unreadCount": unread_count
             })
 
         return result
@@ -48,8 +52,18 @@ class ConversationService:
         # Determine conversation type: direct for exactly 2 participants, otherwise group
         conversation_type = "direct" if len(participants) == 2 else "group"
 
-        # Create the conversation
-        conversation = await self.repo.create_conversation(conversation_type, participants)
+        # For direct conversations, check for existing between the two participants
+        if conversation_type == "direct":
+            # Direct must be exactly two participants: current user + one other
+            other = others[0]
+            user_a, user_b = sorted([current_user_id, other], key=lambda x: str(x))
+            existing = await self.repo.find_direct_conversation_by_participants(user_a, user_b)
+            if existing:
+                conversation = existing
+            else:
+                conversation = await self.repo.create_conversation(conversation_type, participants)
+        else:
+            conversation = await self.repo.create_conversation(conversation_type, participants)
 
         if conversation_type == "direct":
             # Pick the other participant as 'friend' for direct convo summary

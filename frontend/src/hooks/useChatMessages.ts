@@ -6,25 +6,9 @@ import {
   editMessage as apiEditMessage,
   deleteMessage as apiDeleteMessage,
   updateLastRead,
-  type BackendMessage,
 } from "../lib/api";
-
-const USER_ID = "1eb0fa76-fad3-4dd2-9536-ec257c29bba3";
-
-function formatTime(iso: string) {
-  const d = new Date(iso);
-  return `${d.getHours().toString().padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
-}
-
-function mapBackendToMessage(bm: BackendMessage, userId: string): Message {
-  return {
-    id: bm.id,
-    sender: bm.sender_id === userId ? "Me" : bm.sender_id,
-    text: bm.body,
-    time: formatTime(bm.created_at),
-    isDeleted: bm.deleted_for_everyone,
-  };
-}
+import { USER_ID } from "@/lib/chat/constants";
+import { mapBackendToMessage } from "@/lib/chat/mapBackendToMessage";
 
 export function useChatMessages(initialChats: Chat[]) {
   const [chatsState, setChatsState] = useState<Chat[]>(initialChats);
@@ -33,6 +17,11 @@ export function useChatMessages(initialChats: Chat[]) {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
 
   const selectedChat = useMemo(() => chatsState.find((c) => c.id === selectedChatId) || null, [chatsState, selectedChatId]);
+
+  // Keep local chats state in sync when conversations load/update (stable initialization)
+  useEffect(() => {
+    setChatsState(initialChats);
+  }, [initialChats]);
 
   useEffect(() => {
     if (!selectedChatId) return;
@@ -48,6 +37,10 @@ export function useChatMessages(initialChats: Chat[]) {
           .at(-1);
         if (lastOtherMsg) {
           await updateLastRead(selectedChatId, USER_ID, lastOtherMsg.id);
+          // Zero unread locally for the selected chat after marking last read
+          setChatsState((prev) => prev.map((c) => (
+            c.id === selectedChatId ? { ...c, unread: 0 } : c
+          )));
         }
       } catch (e) {
         console.warn("Failed to fetch messages, using local data", e);
@@ -97,12 +90,33 @@ export function useChatMessages(initialChats: Chat[]) {
       try {
         const created = await apiSendMessage(selectedChatId, USER_ID, body);
         const newMsg = mapBackendToMessage(created, USER_ID);
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: [...c.messages, newMsg] } : c)));
+        setChatsState((prev) => {
+          const updated = prev.map((c) => (
+            c.id === selectedChatId
+              ? {
+                  ...c,
+                  messages: [...c.messages, newMsg],
+                  lastMessage: created.body ?? body,
+                  timestamp: created.created_at ?? new Date().toISOString(),
+                }
+              : c
+          ));
+          return updated.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        });
       } catch (e) {
         console.warn("Failed to send to backend, appending locally", e);
         const nowIso = new Date().toISOString();
-        const localMsg: Message = { id: crypto.randomUUID(), sender: "Me", text: body, time: formatTime(nowIso) };
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: [...c.messages, localMsg] } : c)));
+        const hh = new Date(nowIso).getHours().toString().padStart(2, "0");
+        const mm = new Date(nowIso).getMinutes().toString().padStart(2, "0");
+        const localMsg: Message = { id: crypto.randomUUID(), sender: "Me", text: body, time: `${hh}:${mm}` };
+        setChatsState((prev) => {
+          const updated = prev.map((c) => (
+            c.id === selectedChatId
+              ? { ...c, messages: [...c.messages, localMsg], lastMessage: body, timestamp: nowIso }
+              : c
+          ));
+          return updated.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        });
       } finally {
         setMessageInput("");
       }
@@ -114,7 +128,14 @@ export function useChatMessages(initialChats: Chat[]) {
     (async () => {
       try {
         await apiDeleteMessage(selectedChatId, msg.id, USER_ID);
-        setChatsState((prev) => prev.map((c) => (c.id === selectedChatId ? { ...c, messages: c.messages.filter((m) => m.id !== msg.id) } : c)));
+        // Mark as deleted locally so UI shows the deleted label immediately
+        setChatsState((prev) =>
+          prev.map((c) =>
+            c.id === selectedChatId
+              ? { ...c, messages: c.messages.map((m) => (m.id === msg.id ? { ...m, isDeleted: true, text: "" } : m)) }
+              : c
+          )
+        );
       } catch (e) {
         console.warn("Failed to delete via backend, marking locally", e);
         setChatsState((prev) =>

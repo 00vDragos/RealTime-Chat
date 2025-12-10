@@ -2,10 +2,11 @@ import SideBar from "./components/layout/SideBar";
 import Navbar from "./components/layout/NavBar";
 import MessagesList from "./components/ui/MessagesList";
 import MessagesInput from "./components/ui/MessagesInput";
-import { chats } from "./mockData";
 import { useChatMessages } from "../../hooks/useChatMessages";
+import { useConversations } from "../../hooks/useConversations";
 
 export default function ChatPage() {
+    const { conversations, refetch } = useConversations([]);
     const {
         chatsState,
         selectedChatId,
@@ -17,7 +18,7 @@ export default function ChatPage() {
         handleEditStart,
         handleSend,
         handleDelete,
-    } = useChatMessages(chats);
+    } = useChatMessages(conversations);
 
     return (
         <div className="flex h-screen">
@@ -26,11 +27,15 @@ export default function ChatPage() {
                 chats={chatsState}
                 selectedChatId={selectedChatId}
                 setSelectedChatId={setSelectedChatId}
+                onConversationCreated={async () => {
+                    // Refresh the conversation list when a new chat is created
+                    await refetch();
+                }}
             />
 
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col bg-[rgb(var(--sidebar))]">
-                <Navbar />
+                <Navbar name={selectedChat?.name} />
 
                 <div className="flex-1 flex flex-col p-6 pb-1 overflow-y-auto">
                     {selectedChat ? (

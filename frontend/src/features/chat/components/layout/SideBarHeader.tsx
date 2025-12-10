@@ -15,7 +15,7 @@ import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 type SideBarHeaderProps = {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
-  onStartChat: (contactIds: number[]) => void;
+  onStartChat: (contactIds: (string | number)[]) => void;
 };
 
 export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat }: SideBarHeaderProps) {

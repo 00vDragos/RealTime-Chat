@@ -143,8 +143,68 @@ export type Friend = {
 };
 
 export async function listMyFriends(userId: string): Promise<Friend[]> {
-  return fetchJson<Friend[]>(`/api/friends/list`, {
+  return fetchJson<Friend[]>(`/friends`, {
     method: 'GET',
+    headers: { 'user-id': userId },
+  });
+}
+
+export type FriendRequestUser = {
+  id: string;
+  email: string;
+  display_name?: string | null;
+  avatar_url?: string | null;
+};
+
+export type FriendRequest = {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  status: 'pending' | 'accepted' | 'declined' | 'canceled';
+  created_at?: string;
+  updated_at?: string;
+  from_user?: FriendRequestUser | null;
+  to_user?: FriendRequestUser | null;
+};
+
+export async function listFriendRequests(userId: string, direction?: 'in' | 'out'): Promise<FriendRequest[]> {
+  const params = direction ? `?direction=${direction}` : '';
+  return fetchJson<FriendRequest[]>(`/friends/requests${params}`, {
+    method: 'GET',
+    headers: { 'user-id': userId },
+  });
+}
+
+export async function sendFriendRequest(toEmail: string, userId: string): Promise<FriendRequest> {
+  return fetchJson<FriendRequest>(`/friends/requests`, {
+    method: 'POST',
+    headers: { 'user-id': userId },
+    body: JSON.stringify({ to_email: toEmail }),
+  });
+}
+
+export async function cancelFriendRequest(requestId: string, userId: string) {
+  return fetchJson<{ detail: string }>(`/friends/requests/${requestId}`, {
+    method: 'DELETE',
+    headers: { 'user-id': userId },
+  });
+}
+
+export async function respondToFriendRequest(
+  requestId: string,
+  status: 'accepted' | 'declined',
+  userId: string,
+): Promise<FriendRequest> {
+  return fetchJson<FriendRequest>(`/friends/requests/${requestId}/respond`, {
+    method: 'POST',
+    headers: { 'user-id': userId },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function removeFriend(friendId: string, userId: string) {
+  return fetchJson<{ detail: string }>(`/friends/${friendId}`, {
+    method: 'DELETE',
     headers: { 'user-id': userId },
   });
 }

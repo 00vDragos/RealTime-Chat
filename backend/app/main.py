@@ -9,7 +9,6 @@ from app.core.config import settings
 from app.routes.messages.send_message import router as send_message_router
 from app.routes.messages.edit_message import router as edit_message_router
 from app.routes.messages.delete_message import router as delete_message_router
-from app.routes.friendships.list_friends import router as friendships_list_friends_router
 from app.routes.messages.get_messages import router as get_messages_router
 from app.routes.messages.update_last_read import router as update_last_read_router
 from app.routes.messages.conversations import router as conversations_router
@@ -45,7 +44,6 @@ app.add_middleware(
 app.include_router(send_message_router, tags=["messages"])
 app.include_router(edit_message_router, tags=["messages"])
 app.include_router(delete_message_router, tags=["messages"])
-app.include_router(friendships_list_friends_router)
 app.include_router(conversations_router, tags=["messages"])
 
 # Conversations routes

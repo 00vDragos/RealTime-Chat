@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, TIMESTAMP, Index
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from app.db.session import Base
 from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 class FriendRequest(Base):
     __tablename__ = "friend_requests"
@@ -12,6 +13,9 @@ class FriendRequest(Base):
     status = Column(String, nullable=False)  # use app Enum or DB enum: pending|accepted|declined|canceled
     created_at = Column(TIMESTAMP, nullable=True)
     updated_at = Column(TIMESTAMP, nullable=True)
+
+    from_user = relationship("User", foreign_keys=[from_user_id])
+    to_user = relationship("User", foreign_keys=[to_user_id])
 
     __table_args__ = (
         Index("uq_friend_requests_pair", "from_user_id", "to_user_id", unique=True),

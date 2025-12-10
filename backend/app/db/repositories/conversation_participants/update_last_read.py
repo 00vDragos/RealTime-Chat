@@ -34,6 +34,8 @@ async def update_last_read(
     messages = msgs_result.scalars().all()
 
     for msg in messages:
+        if msg.sender_id == user_id:
+            continue
         seen_map = msg.seen_at or {}
 
         if user_key not in seen_map:

@@ -108,6 +108,21 @@ export function useChatMessages(initialChats: Chat[]) {
         if (typeof conversationId !== "string") return;
         const targetConversationId = conversationId;
         synchronizeConversationMessages(targetConversationId, { bumpUnread: targetConversationId !== selectedChatId });
+        const inboundMessage = payload.message as ChatInboundMessage | undefined;
+        if (
+          targetConversationId === selectedChatId &&
+          authUserId &&
+          inboundMessage?.id &&
+          inboundMessage.sender_id !== authUserId
+        ) {
+          (async () => {
+            try {
+              await updateLastRead(targetConversationId, authUserId, inboundMessage.id);
+            } catch (error) {
+              console.warn("Failed to mark message as read in realtime handler", error);
+            }
+          })();
+        }
         break;
       }
       case "message_edited": {
@@ -163,16 +178,24 @@ export function useChatMessages(initialChats: Chat[]) {
         break;
       }
       case "message_read": {
-        if (typeof conversationId !== "string" || typeof payload.message_id !== "string") return;
+        if (typeof conversationId !== "string") return;
         const readerId = typeof payload.user_id === "string" ? payload.user_id : undefined;
         if (!readerId || readerId === authUserId) return;
+        const baseIds = Array.isArray(payload.message_ids)
+          ? payload.message_ids.filter((id): id is string => typeof id === "string")
+          : [];
+        if (typeof payload.message_id === "string" && !baseIds.includes(payload.message_id)) {
+          baseIds.push(payload.message_id);
+        }
+        if (baseIds.length === 0) return;
+        const idsToUpdate = new Set(baseIds);
         setChatsState((prev) => {
           let touched = false;
           const next = prev.map((chat) => {
             if (chat.id !== conversationId) return chat;
             let messageTouched = false;
             const updatedMessages = chat.messages.map((msg): Message => {
-              if (msg.id !== payload.message_id || msg.sender !== "Me" || msg.status === "seen") return msg;
+              if (!idsToUpdate.has(msg.id) || msg.sender !== "Me" || msg.status === "seen") return msg;
               messageTouched = true;
               return { ...msg, status: "seen" };
             });

@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import MessageBubble from "./MessageBubble";
 import type { Message } from "../../types";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,7 +10,7 @@ type MessagesListProps = {
   onDelete?: (msg: Message) => void;
 };
 
-export default function MessagesList({ messages, onEdit, onDelete }: MessagesListProps) {
+function MessagesListComponent({ messages, onEdit, onDelete }: MessagesListProps) {
   return (
     <ScrollArea className="w-full h-full" type="always">
       <div className="flex flex-col gap-4">
@@ -20,3 +21,8 @@ export default function MessagesList({ messages, onEdit, onDelete }: MessagesLis
     </ScrollArea>
   );
 }
+
+const MessagesList = memo(MessagesListComponent);
+MessagesList.displayName = "MessagesList";
+
+export default MessagesList;

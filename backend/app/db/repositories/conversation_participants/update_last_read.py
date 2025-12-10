@@ -12,7 +12,7 @@ async def update_last_read(
     conversation_id: uuid.UUID,
     user_id: uuid.UUID,
     message_id: uuid.UUID
-) -> ConversationsParticipants:
+) -> tuple[ConversationsParticipants, list[uuid.UUID]]:
     result = await db.execute(
         update(ConversationsParticipants)
         .where(
@@ -27,6 +27,7 @@ async def update_last_read(
 
     now = datetime.utcnow().isoformat()
     user_key = str(user_id)
+    updated_message_ids: list[uuid.UUID] = []
 
     msgs_result = await db.execute(
         select(Message).where(Message.conversation_id == conversation_id)
@@ -41,7 +42,8 @@ async def update_last_read(
         if user_key not in seen_map:
             seen_map[user_key] = now
             msg.seen_at = seen_map
+            updated_message_ids.append(msg.id)
 
     await db.commit()
 
-    return participant
+    return participant, updated_message_ids

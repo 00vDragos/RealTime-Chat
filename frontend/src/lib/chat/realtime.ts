@@ -38,16 +38,22 @@ export type TypingEvent = 'typing_start' | 'typing_stop';
 
 export type ChatInboundMessage = {
   id: string;
+  conversation_id?: string;
   body: string;
   sender_id: string;
   sender_name?: string;
+  created_at?: string;
+  delivered_at?: Record<string, unknown> | null;
+  seen_at?: Record<string, unknown> | null;
+  edited_at?: string | null;
+  deleted_for_everyone?: boolean;
 };
 
 export type ChatInboundEvent =
   | { event: 'new_message'; conversation_id: string; message: ChatInboundMessage }
   | { event: 'message_edited'; conversation_id: string; message: ChatInboundMessage }
   | { event: 'message_deleted'; conversation_id: string; message_id: string; deleted_by?: string; deletor_name?: string }
-  | { event: 'message_read'; conversation_id: string; message_id: string; user_id: string; user_name?: string }
+  | { event: 'message_read'; conversation_id: string; message_id: string; user_id: string; user_name?: string; message_ids?: string[] }
   | { event: TypingEvent; conversation_id: string; user_id: string; sender_name?: string }
   | { event: string; [key: string]: unknown };
 

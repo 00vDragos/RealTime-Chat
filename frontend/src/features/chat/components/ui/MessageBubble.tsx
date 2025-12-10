@@ -1,5 +1,5 @@
 import type { Message } from "../../types";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ type MessageBubbleProps = {
   onDelete?: (msg: Message) => void;
 };
 
-export default function MessageBubble({ message, onEdit, onDelete }: MessageBubbleProps) {
+function MessageBubbleComponent({ message, onEdit, onDelete }: MessageBubbleProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
 
@@ -90,3 +90,8 @@ export default function MessageBubble({ message, onEdit, onDelete }: MessageBubb
     </DropdownMenu>
   );
 }
+
+const MessageBubble = memo(MessageBubbleComponent);
+MessageBubble.displayName = "MessageBubble";
+
+export default MessageBubble;

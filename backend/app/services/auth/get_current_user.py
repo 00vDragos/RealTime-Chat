@@ -19,7 +19,7 @@ async def get_current_user(
             detail="Invalid or expired token"
         )
             
-    user_id: str = payload.get("sub")
+    user_id: str = payload.get("id")
         
     if user_id is None:
         raise HTTPException(

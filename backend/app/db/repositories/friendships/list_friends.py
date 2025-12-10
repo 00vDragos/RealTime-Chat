@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from app.models.friendships import Friendship
-from app.models.users import users as User
+from app.models.users import User
 
 async def list_friends_repo(db: AsyncSession, user_id: uuid.UUID) -> List[User]:
     # Find friendships where the user is either side, then return the other user

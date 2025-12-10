@@ -1,6 +1,6 @@
 import asyncio
 from sqlalchemy import select
-from app.db.session import AsyncSessionLocal
+from backend.app.db.session import AsyncSessionLocal
 from app.models.users import User
 from app.services.friends.friend_requests import FriendRequestService
 
@@ -12,8 +12,8 @@ async def ensure_user(db, email: str):
     if user:
         return user
 
-    # create minimal user (provider_sub required)
-    u = User(email=email, provider_sub=email)
+    # create minimal user (provider_id required)
+    u = User(email=email, provider_id=email)
     db.add(u)
     await db.flush()
     await db.refresh(u)

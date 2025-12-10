@@ -27,7 +27,7 @@ try:
     import backend.app.models.message_deletions
     import backend.app.models.conversations
     import backend.app.models.refresh_tokens
-    import backend.app.models.conversation_participants
+    import backend.app.models.conversation_participants # noqa: F401
 except Exception :
     pass
 

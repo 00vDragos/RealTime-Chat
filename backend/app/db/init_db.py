@@ -7,6 +7,7 @@ from app.db.session import engine, Base
 #from app.models.conversation_participants import ConversationsParticipants
 #from app.models.messages import Message
 
+
 async def init_db(
     create_tables: bool = False,
     run_migrations: bool = False,

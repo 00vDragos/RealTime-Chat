@@ -11,7 +11,7 @@ class UserBase(BaseModel):
     provider: Optional[str] = None
     provider_id: Optional[str] = None
 
-
+      
 class UserRead(UserBase):
     id: uuid.UUID
     created_at: Optional[datetime] = None

@@ -6,7 +6,7 @@ from app.services.auth import refresh_access_token
 
 router = APIRouter()
 
-@router.post("/auth/refresh",
+@router.post("/api/auth/refresh",
             response_model=AccessTokenResponse,
             summary="Refresh access token",
             description="Generate a new access token using a valid refresh token"

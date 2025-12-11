@@ -9,7 +9,7 @@ from typing import Annotated
 router = APIRouter()
 security = HTTPBearer()
 
-@router.get("/auth/me", 
+@router.get("/api/auth/me", 
             response_model=UserResponse,
             status_code=status.HTTP_200_OK,
             summary="Get current authenticated user",

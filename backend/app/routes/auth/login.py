@@ -6,7 +6,7 @@ from app.services.auth import login_user
 
 router = APIRouter()
 
-@router.post("/auth/login",
+@router.post("/api/auth/login",
              response_model=TokenResponse,
              summary="Login user",
              description="Authenticate user with email and password"

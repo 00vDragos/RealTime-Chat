@@ -6,7 +6,7 @@ from app.services.auth import register_user
 
 router = APIRouter()
 
-@router.post("/auth/register", 
+@router.post("/api/auth/register", 
             response_model=TokenResponse,
             status_code=status.HTTP_201_CREATED, 
             summary="Register a new user",

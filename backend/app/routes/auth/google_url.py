@@ -4,7 +4,7 @@ from app.services.auth import get_google_auth_url
 
 router = APIRouter()
 
-@router.get("/auth/google/url",
+@router.get("/api/auth/google/url",
             response_model=GoogleAuthResponse,
             status_code=status.HTTP_200_OK,
             summary="Get Google OAuth URL",

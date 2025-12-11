@@ -8,6 +8,7 @@ from app.db.dependencies import get_current_user_id, get_current_conversation_id
 from app.services.messages.send_message import send_message_service
 from app.schemas.messages import MessageRead
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.ai.openai_bot import maybe_generate_openai_reply
 
 from app.services.conversation_participants.get_participant_name import get_participant_name_service
 
@@ -38,6 +39,7 @@ async def send_message(
 
         participants = await get_participants(db, conversation_id)
         participant_ids = [str(p.user_id) for p in participants]
+        participant_uuids = [p.user_id for p in participants]
 
         await manager.broadcast(
             participant_ids,
@@ -52,6 +54,31 @@ async def send_message(
                 },
             }
         )
+
+        try:
+            bot_reply = await maybe_generate_openai_reply(
+                db=db,
+                conversation_id=conversation_id,
+                participant_ids=participant_uuids,
+                sender_id=message.sender_id,
+            )
+            if bot_reply:
+                bot_reply.sender_name = await get_participant_name_service(db, bot_reply.sender_id)
+                await manager.broadcast(
+                    participant_ids,
+                    {
+                        "event": "new_message",
+                        "conversation_id": str(conversation_id),
+                        "message": {
+                            "id": str(bot_reply.id),
+                            "body": bot_reply.body,
+                            "sender_id": str(bot_reply.sender_id),
+                            "sender_name": bot_reply.sender_name,
+                        },
+                    }
+                )
+        except Exception as exc:
+            print("OpenAI bot reply failed", exc)
 
         return message
 

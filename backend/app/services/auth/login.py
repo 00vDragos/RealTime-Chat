@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 from app.models.users import User
 from app.core.security import verify_password, create_access_token
 from .helpers import create_refresh_token
+from app.services.ai.openai_bot import ensure_user_has_openai_friendship
 
 async def login_user(
         email: str,
@@ -39,6 +40,7 @@ async def login_user(
         access_token = create_access_token(data={"id": str(user.id), "email": user.email})
         
         refresh_token = await create_refresh_token(user.id, db)
+        await ensure_user_has_openai_friendship(db, user.id)
         
         return {
             "access_token": access_token,

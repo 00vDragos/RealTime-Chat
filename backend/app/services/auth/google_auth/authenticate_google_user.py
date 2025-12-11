@@ -9,6 +9,7 @@ import uuid
 from app.models.users import User
 from app.core.config import settings
 from app.core.security import create_access_token
+from app.services.ai.openai_bot import ensure_user_has_openai_friendship
 from app.services.auth.helpers import create_refresh_token
 
 async def authenticate_google_user(
@@ -122,6 +123,7 @@ async def _find_or_create_user(
         user.updated_at = datetime.now(timezone.utc)
         await db.commit()
         await db.refresh(user)
+        await ensure_user_has_openai_friendship(db, user.id)
         return user
     
     result = await db.execute(
@@ -143,6 +145,7 @@ async def _find_or_create_user(
         existing_user.updated_at = datetime.now(timezone.utc)
         await db.commit()
         await db.refresh(existing_user)
+        await ensure_user_has_openai_friendship(db, existing_user.id)
         return existing_user
     
     new_user = User(
@@ -160,5 +163,6 @@ async def _find_or_create_user(
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+    await ensure_user_has_openai_friendship(db, new_user.id)
     
     return new_user

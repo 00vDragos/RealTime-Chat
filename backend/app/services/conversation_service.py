@@ -57,6 +57,7 @@ class ConversationService:
                 "friendId": str(friend_id),
                 "friendName": friend.display_name if friend else "Unknown",
                 "friendAvatar": friend_avatar,
+                "friendProvider": friend.provider if friend else None,
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
                 "unreadCount": unread_count,

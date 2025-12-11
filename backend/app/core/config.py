@@ -1,4 +1,7 @@
 from typing import Optional
+import uuid
+
+from pydantic import Field
 from dotenv import load_dotenv
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -23,6 +26,15 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str = "postgres"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "chat_db"
+    
+    # OpenAI chat helpers
+    OPENAI_API_KEY: Optional[str] = None
+    OPENAI_MODEL: str = "gpt-4o-mini"
+    OPENAI_SYSTEM_PROMPT: str = Field(default="You are a friendly and concise chat companion.")
+    OPENAI_BOT_USER_ID: uuid.UUID = Field(default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
+    OPENAI_BOT_EMAIL: str = Field(default="openai-bot@realtime-chat.com")
+    OPENAI_BOT_DISPLAY_NAME: str = Field(default="OpenAI Bot")
+    OPENAI_BOT_AVATAR_URL: Optional[str] = Field(default=None)
     
     #JWT
     JWT_SECRET_KEY: str

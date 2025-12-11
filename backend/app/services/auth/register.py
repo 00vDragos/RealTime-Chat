@@ -7,6 +7,7 @@ import uuid
 
 from app.models.users import User
 from app.core.security import hash_password, create_access_token
+from app.services.ai.openai_bot import ensure_user_has_openai_friendship
 from .helpers import create_refresh_token
 
 async def register_user(
@@ -43,6 +44,7 @@ async def register_user(
         db.add(new_user)
         await db.commit()
         await db.refresh(new_user)
+        await ensure_user_has_openai_friendship(db, new_user.id)
         
         access_token = create_access_token(data={"id": str(new_user.id), "email": new_user.email})
         

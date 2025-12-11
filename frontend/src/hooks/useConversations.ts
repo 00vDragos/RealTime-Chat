@@ -12,6 +12,7 @@ function mapSummaryToChat(s: ConversationSummary): Chat {
     timestamp: s.lastMessageTime ?? "",
     unread: s.unreadCount ?? 0,
     messages: [],
+    isBot: s.friendProvider === "openai",
   };
 }
 

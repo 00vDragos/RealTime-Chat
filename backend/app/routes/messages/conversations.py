@@ -7,6 +7,7 @@ from app.db.dependencies import get_db, get_current_user_id
 from app.services.conversation_service import ConversationService
 from app.db.repositories.conversation_repo import ConversationRepository
 from app.schemas.conversations import ConversationSummary, ConversationCreate
+from app.websocket.manager import manager
 
 
 class ConversationCreateRequest(BaseModel):
@@ -31,4 +32,20 @@ async def create_conversation(
 ):
 
     service = ConversationService(ConversationRepository(db))
-    return await service.create_conversation(user_id, payload.participant_ids)
+    summary = await service.create_conversation(user_id, payload.participant_ids)
+
+    # Notify participants via websocket so the conversation appears for them immediately
+    participant_ids = summary.get("participantIds", [])
+    try:
+        await manager.broadcast(
+            participant_ids,
+            {
+                "event": "conversation_created",
+                "conversation": summary,
+            },
+        )
+    except Exception:
+        # Do not fail the API if websockets broadcasting fails
+        pass
+
+    return summary

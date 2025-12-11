@@ -12,10 +12,11 @@ class ConversationService:
         result = []
 
         for conv in conversations:
-            friend_id = await self.repo.get_other_participant(conv.id, current_user_id)
-            if not friend_id:
+            # Determine conversation type by participant count
+            participant_ids = await self.repo.get_participant_ids(conv.id)
+            is_direct = len(participant_ids) == 2
+            if not is_direct:
                 # group conversation: include participant ids so frontend can detect duplicates
-                participant_ids = await self.repo.get_participant_ids(conv.id)
                 preview = conv.last_message_preview or ""
                 if preview.strip().lower() == "__deleted__":
                     preview = "(deleted message)"
@@ -24,22 +25,31 @@ class ConversationService:
                 last_read_id = await self.repo.get_last_read_message_id(conv.id, current_user_id)
                 unread_count = await self.repo.count_unread_messages(conv.id, current_user_id, last_read_id)
 
+                # Fetch participant display names once
+                participant_names = []
+                for p in participant_ids:
+                    user = await self.repo.get_user(p)
+                    participant_names.append(user.display_name if user and getattr(user, "display_name", None) else "Unknown")
+
+                # Use comma-separated participant names as group name
+                group_name = ", ".join(participant_names)
+
                 result.append({
                     "id": str(conv.id),
                     "friendId": None,
-                    "friendName": f"Group ({len(participant_ids)} members)",
+                    "friendName": group_name,
                     "lastMessage": preview,
                     "lastMessageTime": conv.last_message_created_at,
                     "unreadCount": unread_count,
                     "participantIds": [str(p) for p in participant_ids],
-                    "participantNames": [
-                        (await self.repo.get_user(p)).display_name if await self.repo.get_user(p) else "Unknown"
-                        for p in participant_ids
-                    ],
+                    "participantNames": participant_names,
                 })
                 continue
 
-            friend = await self.repo.get_user(friend_id)
+            # Direct conversation path
+            # Pick the other participant as friend
+            friend_id = next((pid for pid in participant_ids if pid != current_user_id), None)
+            friend = await self.repo.get_user(friend_id) if friend_id else None
             friend_avatar = None
             if friend and getattr(friend, "avatar_url", None):
                 friend_avatar = friend.avatar_url
@@ -52,20 +62,23 @@ class ConversationService:
             last_read_id = await self.repo.get_last_read_message_id(conv.id, current_user_id)
             unread_count = await self.repo.count_unread_messages(conv.id, current_user_id, last_read_id)
 
+            # Build participant names list
+            participant_names = []
+            for p in participant_ids:
+                u = await self.repo.get_user(p)
+                participant_names.append(u.display_name if u and getattr(u, "display_name", None) else "Unknown")
+
             result.append({
                 "id": str(conv.id),
-                "friendId": str(friend_id),
+                "friendId": str(friend_id) if friend_id else None,
                 "friendName": friend.display_name if friend else "Unknown",
                 "friendAvatar": friend_avatar,
                 "friendProvider": friend.provider if friend else None,
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
                 "unreadCount": unread_count,
-                "participantIds": [str(friend_id), str(current_user_id)],
-                "participantNames": [
-                    friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown",
-                    (await self.repo.get_user(current_user_id)).display_name if await self.repo.get_user(current_user_id) else "You"
-                ]
+                "participantIds": [str(p) for p in participant_ids],
+                "participantNames": participant_names,
             })
 
         return result
@@ -110,8 +123,13 @@ class ConversationService:
             friend_avatar = friend.avatar_url if friend and getattr(friend, "avatar_url", None) else None
             friend_id_out = str(friend_id)
         else:
-            # Group conversation summary
-            friend_name = f"Group ({len(participants)} members)"
+            # Group conversation summary: build participant names and use them as the group title
+            participant_names = []
+            for p in participants:
+                user = await self.repo.get_user(p)
+                participant_names.append(user.display_name if user and getattr(user, "display_name", None) else "Unknown")
+
+            friend_name = ", ".join(participant_names)
             friend_avatar = None
             friend_id_out = None
 
@@ -123,6 +141,7 @@ class ConversationService:
             "lastMessage": None,
             "lastMessageTime": None,
             "unreadCount": 0,
-            "participantIds": [str(p) for p in participants]
+            "participantIds": [str(p) for p in participants],
+            "participantNames": participant_names,
         }
         return summary

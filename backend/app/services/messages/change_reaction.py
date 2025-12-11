@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from uuid import UUID
-from typing import Optional
 from sqlalchemy.orm import attributes
 
 from app.models.messages import Message

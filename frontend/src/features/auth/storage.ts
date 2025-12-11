@@ -95,6 +95,51 @@ export function getStoredAccessToken(): string | undefined {
   return getStoredSession()?.accessToken;
 }
 
+export function updateSessionAvatarUrl(avatarUrl: string) {
+  const session = getStoredSession();
+  if (!session || !session.user) return;
+  const next: AuthSession = {
+    ...session,
+    user: {
+      ...session.user,
+      avatarUrl: avatarUrl || undefined,
+    },
+  };
+  writeSessionToStorage(next);
+  setInMemorySession(next);
+}
+
+export type ApiUserResponse = {
+  id: string;
+  email: string;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  provider?: string | null;
+  provider_id?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export function updateSessionUserFromApi(user: ApiUserResponse) {
+  const session = getStoredSession();
+  if (!session) return;
+  const next: AuthSession = {
+    ...session,
+    user: {
+      id: user.id,
+      email: user.email,
+      displayName: user.display_name ?? undefined,
+      avatarUrl: user.avatar_url ?? undefined,
+      provider: user.provider ?? undefined,
+      providerSub: user.provider_id ?? undefined,
+      createdAt: user.created_at ?? undefined,
+      updatedAt: user.updated_at ?? undefined,
+    },
+  };
+  writeSessionToStorage(next);
+  setInMemorySession(next);
+}
+
 export function subscribeToAuthSession(listener: SessionSubscriber) {
   subscribers.add(listener);
   return () => {

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { Chat } from "../../types";
 import { formatConversationTimestamp } from "@/lib/utils";
@@ -20,8 +20,11 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
         >
             {/* Avatar */}
             <Avatar className="h-12 w-12">
+                {chat.avatar && (
+                    <AvatarImage src={chat.avatar} alt={chat.name} />
+                )}
                 <AvatarFallback className="bg-[rgb(var(--destructive))] text-[rgb(var(--foreground))]">
-                    {(chat.avatar || chat.name?.trim().charAt(0)?.toUpperCase() || "?")}
+                    {chat.name?.trim().charAt(0)?.toUpperCase() || "?"}
                 </AvatarFallback>
             </Avatar>
 

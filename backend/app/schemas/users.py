@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     display_name: Optional[str] = None
     avatar_url: Optional[str] = None
     provider: Optional[str] = None
-    provider_id: Optional[str] = None
+    provider_sub: Optional[str] = None
 
       
 class UserRead(UserBase):
@@ -17,5 +17,4 @@ class UserRead(UserBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

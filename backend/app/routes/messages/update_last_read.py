@@ -39,7 +39,7 @@ async def update_last_read(
         if msg.sender_id == user_id:
             raise HTTPException(status_code=400, detail="Sender cannot mark own message as seen")
 
-        updated = await update_last_read_service(
+        updated, updated_message_ids = await update_last_read_service(
             db=db,
             conversation_id=conversation_id,
             user_id=user_id,
@@ -48,6 +48,8 @@ async def update_last_read(
 
         if not updated:
             raise HTTPException(status_code=400, detail="Unable to update last read")
+
+        message_ids_payload = [str(mid) for mid in updated_message_ids] or [str(message_id)]
 
         participant_name = await get_participant_name_service(db, user_id)
         participants = await get_participants(db, conversation_id)
@@ -59,6 +61,7 @@ async def update_last_read(
                 "event": "message_read",
                 "conversation_id": str(conversation_id),
                 "message_id": str(message_id),
+                "message_ids": message_ids_payload,
                 "user_id": str(user_id),
                 "user_name": participant_name,
             }

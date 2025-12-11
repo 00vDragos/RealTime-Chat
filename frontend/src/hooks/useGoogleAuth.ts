@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { loginWithGoogleIdToken } from '@/services/auth';
+import { exchangeGoogleAuthCode } from '@/services/auth';
+import { persistAuthSession } from '@/features/auth/storage';
 
 type Options = {
   onSuccess?: () => void;
@@ -10,15 +11,16 @@ type Options = {
 export function useGoogleAuthHandlers(options: Options = {}) {
   const navigate = useNavigate();
 
-  async function handleIdToken(credential?: string) {
-    if (!credential) {
-      const msg = 'No ID token received';
+  async function handleAuthCode(code?: string) {
+    if (!code) {
+      const msg = 'No authorization code received';
       options.onError?.(msg);
       toast.error(msg);
       return;
     }
     try {
-      await loginWithGoogleIdToken(credential);
+      const authResult = await exchangeGoogleAuthCode(code);
+      persistAuthSession(authResult);
     } catch (e: any) {
       const msg = e?.message || 'Login failed';
       options.onError?.(msg);
@@ -36,5 +38,5 @@ export function useGoogleAuthHandlers(options: Options = {}) {
     toast.error(msg);
   }
 
-  return { handleIdToken, handleError };
+  return { handleAuthCode, handleError };
 }

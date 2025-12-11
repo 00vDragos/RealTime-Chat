@@ -35,7 +35,12 @@ Frontend `frontend/.env` example content:
 ```
 VITE_GOOGLE_CLIENT_ID=<GOOGLE_OAUTH_WEB_CLIENT_ID>
 VITE_API_URL=<BACKEND_BASE_URL>
+VITE_GOOGLE_REDIRECT_URI=<BACKEND_GOOGLE_CALLBACK_URL>
 ```
+
+Notes for authentication:
+- Email/password login calls `POST /auth/login` and expects an existing user (register via `/auth/register` or seed data).
+- Google login exchanges the auth code against `POST /auth/google/callback`. The value of `VITE_GOOGLE_REDIRECT_URI` must match both your backend `GOOGLE_REDIRECT_URI` and the OAuth client's authorized redirect URIs in Google Cloud Console.
 
 Notes:
 - Keep secrets out of Git. `.env` files are already gitignored.

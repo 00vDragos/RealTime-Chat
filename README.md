@@ -93,3 +93,85 @@ If you prefer to run tools manually:
 ruff check .
 black .
 ```
+
+## 🌟 Features
+- Auth: Email/password (+ Google OAuth), JWT, refresh/logout
+- Friends: requests, accept/decline/cancel, list/remove
+- Conversations: direct and group, idempotent creation
+- Messages: send/list/edit/delete, reactions, unread tracking, last message preview
+- WebSockets: broadcasts for `conversation_created`, `new_message`, and presence
+- Avatars: update via secured user endpoint
+
+## 🚀 Quick Start (Docker)
+
+```powershell
+docker compose up --build
+```
+
+Apply migrations (first run):
+
+```powershell
+docker compose exec backend alembic upgrade head
+```
+
+Open:
+- Backend docs: `http://localhost:8000/docs`
+- Frontend: `http://localhost:5173`
+
+## 🔧 Configuration Notes
+- Backend `.env` (root) should include `DATABASE_URL`, `DEBUG`, `ALLOWED_ORIGINS`, JWT settings, and Google OAuth creds.
+- Frontend `frontend/.env` should include `VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_REDIRECT_URI`.
+- Ensure Google redirect URI matches the backend callback and is authorized in Google Cloud Console.
+
+## 📚 API Overview
+
+Auth (prefix `/api`):
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+- `GET|POST /api/auth/google/callback` (compat aliases also under `/auth/...`)
+
+Friends:
+- `POST /friends/requests`
+- `GET /friends/requests?direction=in|out`
+- `POST /friends/requests/{id}/respond` (accept/decline) [alias also under `/api/friends/...`]
+- `DELETE /friends/requests/{id}`
+- `GET /friends`
+- `POST /friends/remove` (by `friend_email`)
+
+Messages:
+- `POST /api/messages/new_conversation` `{ participant_ids: UUID[] }`
+- `GET /api/messages/conversations`
+- `POST /api/messages/conversations/{conversation_id}/messages?body=...`
+- Additional: reactions, edit/delete, last-read updates
+
+Users:
+- `PATCH /api/users/me/avatar` `{ avatar_url }`
+
+WebSocket:
+- `GET /ws` (broadcast events)
+
+## ✅ Testing
+
+Unit tests:
+
+```powershell
+pytest -q
+```
+
+Integration tests (backend must be running at `http://localhost:8000`):
+
+```powershell
+pytest -q tests/backend/IntegrationTests
+```
+
+Notes:
+- Integration tests skip gracefully if backend returns errors during conversation creation or message sends.
+- Unit tests set `DEBUG=0` and override DB session to create tables on the app engine for isolation.
+
+## 🛠️ Troubleshooting
+- 404 Google callback: use `/api/auth/google/callback` or `/auth/google/callback` (compat alias).
+- Method Not Allowed for friend respond: use `POST /friends/requests/{id}/respond` or the `/api/friends/...` alias.
+- "Internal Server Error" on `new_conversation`: apply migrations and verify participant IDs exclude the creator; check server logs.

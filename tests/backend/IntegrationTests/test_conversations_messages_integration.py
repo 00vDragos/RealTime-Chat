@@ -14,21 +14,21 @@ async def test_direct_conversation_and_messages():
         a = {"email": "int_c@test.com", "password": "ParolaTare1!", "display_name": "IntC"}
         b = {"email": "int_d@test.com", "password": "ParolaTare1!", "display_name": "IntD"}
         for u in (a, b):
-            await client.post("/api/auth/register", json=u)
-        login_a = await client.post("/api/auth/login", json={"email": a["email"], "password": a["password"]})
-        login_b = await client.post("/api/auth/login", json={"email": b["email"], "password": b["password"]})
+            await client.post("/auth/register", json=u)
+        login_a = await client.post("/auth/login", json={"email": a["email"], "password": a["password"]})
+        login_b = await client.post("/auth/login", json={"email": b["email"], "password": b["password"]})
         tok_a = login_a.json()["access_token"]
         tok_b = login_b.json()["access_token"]
-        me_a = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {tok_a}"})
-        me_b = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {tok_b}"})
+        me_a = await client.get("/auth/me", headers={"Authorization": f"Bearer {tok_a}"})
+        me_b = await client.get("/auth/me", headers={"Authorization": f"Bearer {tok_b}"})
         a_id = me_a.json()["id"]
         b_id = me_b.json()["id"]
 
         # Create direct conversation A<->B
-        resp_conv = await client.post("/api/messages/new_conversation", headers={"Authorization": f"Bearer {tok_a}"}, json={"participant_ids": [b_id]})
+        resp_conv = await client.post("/messages/new_conversation", headers={"Authorization": f"Bearer {tok_a}"}, json={"participant_ids": [b_id]})
         if resp_conv.status_code not in (200, 201):
             # Fallback: list conversations and try to find direct A-B
-            list_a = await client.get("/api/messages/conversations", headers={"Authorization": f"Bearer {tok_a}"})
+            list_a = await client.get("/messages/conversations", headers={"Authorization": f"Bearer {tok_a}"})
             if list_a.status_code != 200:
                 pytest.skip(f"List conversations failed for A: {list_a.text}")
             conv_id = None
@@ -47,15 +47,15 @@ async def test_direct_conversation_and_messages():
         assert UUID(conv_id)
 
         # Send messages
-        msg1 = await client.post(f"/api/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tok_a}"}, params={"body": "Hello from A"})
+        msg1 = await client.post(f"/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tok_a}"}, params={"body": "Hello from A"})
         if msg1.status_code not in (200, 201):
             pytest.skip(f"Message send failed (A): {msg1.text}")
-        msg2 = await client.post(f"/api/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tok_b}"}, params={"body": "Hi A, this is B"})
+        msg2 = await client.post(f"/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tok_b}"}, params={"body": "Hi A, this is B"})
         if msg2.status_code not in (200, 201):
             pytest.skip(f"Message send failed (B): {msg2.text}")
 
         # List conversations for A; verify last message preview/time present
-        list_a = await client.get("/api/messages/conversations", headers={"Authorization": f"Bearer {tok_a}"})
+        list_a = await client.get("/messages/conversations", headers={"Authorization": f"Bearer {tok_a}"})
         assert list_a.status_code == 200
         found = [c for c in list_a.json() if c.get("id") == conv_id]
         assert found and found[0].get("lastMessage")
@@ -70,23 +70,23 @@ async def test_group_conversation_and_messages():
             {"email": "int_g@test.com", "password": "ParolaTare1!", "display_name": "IntG"},
         ]
         for u in users:
-            await client.post("/api/auth/register", json=u)
+            await client.post("/auth/register", json=u)
         tokens = {}
         ids = {}
         for u in users:
-            login = await client.post("/api/auth/login", json={"email": u["email"], "password": u["password"]})
+            login = await client.post("/auth/login", json={"email": u["email"], "password": u["password"]})
             tokens[u["email"]] = login.json()["access_token"]
-            me = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {tokens[u['email']]}"})
+            me = await client.get("/auth/me", headers={"Authorization": f"Bearer {tokens[u['email']]}"})
             ids[u["email"]] = me.json()["id"]
 
         creator = users[0]
         others = [ids[users[1]["email"]], ids[users[2]["email"]]]
 
         # Create group conversation
-        resp_conv = await client.post("/api/messages/new_conversation", headers={"Authorization": f"Bearer {tokens[creator['email']]}"}, json={"participant_ids": others})
+        resp_conv = await client.post("/messages/new_conversation", headers={"Authorization": f"Bearer {tokens[creator['email']]}"}, json={"participant_ids": others})
         if resp_conv.status_code not in (200, 201):
             # Fallback: list and match by participants
-            list_creator = await client.get("/api/messages/conversations", headers={"Authorization": f"Bearer {tokens[creator['email']]}"})
+            list_creator = await client.get("/messages/conversations", headers={"Authorization": f"Bearer {tokens[creator['email']]}"})
             if list_creator.status_code != 200:
                 pytest.skip(f"List conversations failed for creator: {list_creator.text}")
             conv_id = None
@@ -105,18 +105,18 @@ async def test_group_conversation_and_messages():
         assert UUID(conv_id)
 
         # Send messages by multiple participants
-        m1 = await client.post(f"/api/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[creator['email']]}"}, params={"body": "Hello group"})
+        m1 = await client.post(f"/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[creator['email']]}"}, params={"body": "Hello group"})
         if m1.status_code not in (200, 201):
             pytest.skip(f"Message send failed (creator): {m1.text}")
-        m2 = await client.post(f"/api/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[users[1]['email']]}"}, params={"body": "Hey all"})
+        m2 = await client.post(f"/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[users[1]['email']]}"}, params={"body": "Hey all"})
         if m2.status_code not in (200, 201):
             pytest.skip(f"Message send failed (user2): {m2.text}")
-        m3 = await client.post(f"/api/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[users[2]['email']]}"}, params={"body": "Hi everyone"})
+        m3 = await client.post(f"/messages/conversations/{conv_id}/messages", headers={"Authorization": f"Bearer {tokens[users[2]['email']]}"}, params={"body": "Hi everyone"})
         if m3.status_code not in (200, 201):
             pytest.skip(f"Message send failed (user3): {m3.text}")
 
         # List conversations and ensure lastMessage populated
-        list_creator = await client.get("/api/messages/conversations", headers={"Authorization": f"Bearer {tokens[creator['email']]}"})
+        list_creator = await client.get("/messages/conversations", headers={"Authorization": f"Bearer {tokens[creator['email']]}"})
         convs = list_creator.json()
         target = [c for c in convs if c.get("id") == conv_id]
         assert target and target[0].get("lastMessage")

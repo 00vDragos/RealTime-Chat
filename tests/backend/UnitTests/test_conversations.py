@@ -4,7 +4,7 @@ import pytest
 @pytest.mark.anyio
 async def test_list_conversations_ok(client, ensure_test_users):
     token = ensure_test_users[0]["token"]
-    resp = await client.get("/api/messages/conversations", headers={"Authorization": f"Bearer {token}"})
+    resp = await client.get("/messages/conversations", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert isinstance(data, list)

@@ -13,15 +13,15 @@ async def test_friend_request_accept_flow():
         a = {"email": "int_a@test.com", "password": "ParolaTare1!", "display_name": "IntA"}
         b = {"email": "int_b@test.com", "password": "ParolaTare1!", "display_name": "IntB"}
         for u in (a, b):
-            await client.post("/api/auth/register", json=u)
+            await client.post("/auth/register", json=u)
         # Login tokens
-        login_a = await client.post("/api/auth/login", json={"email": a["email"], "password": a["password"]})
-        login_b = await client.post("/api/auth/login", json={"email": b["email"], "password": b["password"]})
+        login_a = await client.post("/auth/login", json={"email": a["email"], "password": a["password"]})
+        login_b = await client.post("/auth/login", json={"email": b["email"], "password": b["password"]})
         assert login_a.status_code == 200 and login_b.status_code == 200
         tok_a = login_a.json()["access_token"]
         tok_b = login_b.json()["access_token"]
-        me_a = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {tok_a}"})
-        me_b = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {tok_b}"})
+        me_a = await client.get("/auth/me", headers={"Authorization": f"Bearer {tok_a}"})
+        me_b = await client.get("/auth/me", headers={"Authorization": f"Bearer {tok_b}"})
         a_id = me_a.json()["id"]
         b_id = me_b.json()["id"]
 

@@ -6,14 +6,33 @@ from app.services.auth import logout_user
 
 router = APIRouter()
 
-@router.post("/api/auth/logout",
-             response_model=MessageResponse,
-             summary="Logout user",
-             description="Logout user by invalidating the refresh token")
+@router.post(
+    "/auth/logout",
+    response_model=MessageResponse,
+    summary="Logout user",
+    description="Logout user by invalidating the refresh token"
+)
 async def logout(
     data: LogoutRequest,
-    db: AsyncSession = Depends(get_db)) -> MessageResponse:
-    
+    db: AsyncSession = Depends(get_db)
+) -> MessageResponse:
+    await logout_user(
+        refresh_token=data.refresh_token,
+        db=db
+    )
+    return MessageResponse(message="Logout successful")
+
+# Compatibility: serve /api path with same handler
+@router.post(
+    "/api/auth/logout",
+    response_model=MessageResponse,
+    summary="Logout user [api]",
+    description="Logout user (api path)"
+)
+async def logout_api(
+    data: LogoutRequest,
+    db: AsyncSession = Depends(get_db)
+) -> MessageResponse:
     await logout_user(
         refresh_token=data.refresh_token,
         db=db

@@ -13,5 +13,6 @@ class ConversationParticipantRead(ConversationParticipantBase):
     joined_at: Optional[datetime] = None
     last_read_message_id: Optional[uuid.UUID] = None
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

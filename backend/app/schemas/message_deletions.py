@@ -8,13 +8,10 @@ class MessageDeletionBase(BaseModel):
     user_id: uuid.UUID
 
 
-class MessageDeletionCreate(MessageDeletionBase):
-    pass
-
-
 class MessageDeletionRead(MessageDeletionBase):
     id: uuid.UUID
     deleted_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }

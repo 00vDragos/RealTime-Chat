@@ -14,7 +14,7 @@ async def test_register_login_me_refresh_logout():
         display_name = "IntUser1"
 
         # Try register (idempotent run: if 409, continue)
-        resp_reg = await client.post("/api/auth/register", json={
+        resp_reg = await client.post("/auth/register", json={
             "email": email,
             "password": password,
             "display_name": display_name,
@@ -23,7 +23,7 @@ async def test_register_login_me_refresh_logout():
         assert (resp_reg.status_code in (200, 201, 409)) or (400 <= resp_reg.status_code < 500), resp_reg.text
 
         # Login
-        resp_login = await client.post("/api/auth/login", json={
+        resp_login = await client.post("/auth/login", json={
             "email": email,
             "password": password,
         })
@@ -34,15 +34,15 @@ async def test_register_login_me_refresh_logout():
         assert access
 
         # Me
-        resp_me = await client.get("/api/auth/me", headers={"Authorization": f"Bearer {access}"})
+        resp_me = await client.get("/auth/me", headers={"Authorization": f"Bearer {access}"})
         assert resp_me.status_code == 200, resp_me.text
         me = resp_me.json()
         assert me["email"] == email
 
         # Refresh (if available)
         if refresh:
-            resp_ref = await client.post("/api/auth/refresh", json={"refresh_token": refresh})
+            resp_ref = await client.post("/auth/refresh", json={"refresh_token": refresh})
             assert resp_ref.status_code == 200, resp_ref.text
 
         # Logout (best-effort)
-        await client.post("/api/auth/logout", headers={"Authorization": f"Bearer {access}"})
+        await client.post("/auth/logout", headers={"Authorization": f"Bearer {access}"})

@@ -143,15 +143,14 @@ export type ConversationSummary = {
 };
 
 export async function listConversations(userId: string): Promise<ConversationSummary[]> {
-  // Endpoint defined with router prefix "/api/messages"
-  return fetchJson<ConversationSummary[]>(`/api/messages/conversations`, {
+  return fetchJson<ConversationSummary[]>(`/messages/conversations`, {
     method: 'GET',
     headers: { 'user-id': userId },
   });
 }
 
 export async function createConversation(participantIds: string[], userId: string) {
-  return fetchJson(`/api/messages/new_conversation`, {
+  return fetchJson(`/messages/new_conversation`, {
     method: 'POST',
     headers: { 'user-id': userId },
     body: JSON.stringify({ participant_ids: participantIds }),
@@ -159,14 +158,14 @@ export async function createConversation(participantIds: string[], userId: strin
 }
 
 export async function updateConversation(conversationId: string, payload: { title: string }) {
-  return fetchJson(`/api/messages/conversations/${conversationId}`, {
+  return fetchJson(`/messages/conversations/${conversationId}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
 
 export async function deleteConversation(conversationId: string) {
-  return fetchJson<{ detail: string }>(`/api/messages/conversations/${conversationId}`, {
+  return fetchJson<{ detail: string }>(`/messages/conversations/${conversationId}`, {
     method: 'DELETE',
   });
 }

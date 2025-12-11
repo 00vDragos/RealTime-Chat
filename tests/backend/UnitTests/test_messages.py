@@ -26,14 +26,14 @@ async def test_send_and_list_messages_direct(client, ensure_test_users):
         # We skip pre-creation and rely on sending requiring an existing conversation.
         # So we first create a conversation properly:
         # Step 1: Get user IDs via /api/auth/me
-        ra = await client.get("/api/auth/me", headers=_auth(tokens[a]))
-        rb = await client.get("/api/auth/me", headers=_auth(tokens[b]))
+        ra = await client.get("/auth/me", headers=_auth(tokens[a]))
+        rb = await client.get("/auth/me", headers=_auth(tokens[b]))
         ida = ra.json()["id"]
         idb = rb.json()["id"]
 
         # Backend expects participant_ids excluding creator. Pass only the other participant.
         rc = await client.post(
-            "/api/messages/new_conversation",
+            "/messages/new_conversation",
             headers=_auth(tokens[a]),
             json={"participant_ids": [idb]},
         )
@@ -42,7 +42,7 @@ async def test_send_and_list_messages_direct(client, ensure_test_users):
         conv_id = conv["id"] if isinstance(conv, dict) and "id" in conv else conv.get("conversationId", None)
         # If summary format differs, list conversations and pick one involving both users
         if not conv_id:
-            rlist = await client.get("/api/messages/conversations", headers=_auth(tokens[a]))
+            rlist = await client.get("/messages/conversations", headers=_auth(tokens[a]))
             assert rlist.status_code == 200, rlist.text
             found = None
             for c in rlist.json():
@@ -79,12 +79,12 @@ async def test_send_messages_group(client, ensure_test_users):
     # Get IDs
     ids = []
     for e in emails:
-        r = await client.get("/api/auth/me", headers=_auth(tokens[e]))
+        r = await client.get("/auth/me", headers=_auth(tokens[e]))
         ids.append(r.json()["id"])
 
     # Exclude creator from participant_ids
     rc = await client.post(
-        "/api/messages/new_conversation",
+        "/messages/new_conversation",
         headers=_auth(tokens[emails[0]]),
         json={"participant_ids": ids[1:]},
     )
@@ -95,12 +95,12 @@ async def test_send_messages_group(client, ensure_test_users):
     if isinstance(conv_id, dict):
         conv_id = conv_id.get("id")
     if not conv_id:
-        rlist = await client.get("/api/messages/conversations", headers=_auth(tokens[emails[0]]))
+        rlist = await client.get("/messages/conversations", headers=_auth(tokens[emails[0]]))
         assert rlist.status_code == 200, rlist.text
         # Build expected participant set (creator + others)
         ids_full = []
         for e in emails:
-            rme = await client.get("/api/auth/me", headers=_auth(tokens[e]))
+            rme = await client.get("/auth/me", headers=_auth(tokens[e]))
             ids_full.append(rme.json()["id"])
         expected = set(ids_full)
         for c in rlist.json():

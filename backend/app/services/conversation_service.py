@@ -83,3 +83,21 @@ class ConversationService:
             conversation = existing_group or await self.repo.create_conversation(conversation_type, participants)
 
         return await self._build_conversation_summary(conversation, current_user_id)
+
+    async def update_group_conversation(self, conversation_id: UUID, current_user_id: UUID, title: str):
+        # Update the conversation title and return updated summary
+        updated = await self.repo.update_conversation_title(conversation_id, title)
+        if not updated:
+            # If not found, propagate None or raise
+            raise ValueError("Conversation not found")
+
+        return await self._build_conversation_summary(updated, current_user_id)
+
+    async def delete_conversation(self, conversation_id: UUID, current_user_id: UUID):
+        # Optionally ensure the user is a participant before delete
+        part_ids = await self.repo.get_participant_ids(conversation_id)
+        if current_user_id not in part_ids:
+            # Not authorized to delete
+            raise PermissionError("User is not a participant of the conversation")
+
+        await self.repo.delete_conversation(conversation_id)

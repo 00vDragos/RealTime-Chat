@@ -17,7 +17,8 @@ class ConversationCreateRequest(BaseModel):
 class ConversationUpdateRequest(BaseModel):
     title: str = Field(min_length=1, max_length=255)
 
-router = APIRouter(prefix="/api/messages", tags=["messages"])
+router = APIRouter(prefix="/messages", tags=["messages"])
+# Removed /api/messages compatibility router
 
 @router.get("/conversations", response_model=list[ConversationSummary])
 async def list_conversations(
@@ -26,6 +27,7 @@ async def list_conversations(
 ):
     service = ConversationService(ConversationRepository(db))
     return await service.list_conversations(user_id)
+
 
 
 @router.post("/new_conversation", response_model=ConversationCreate)
@@ -55,6 +57,7 @@ async def create_conversation(
     return summary
 
 
+
 @router.patch("/conversations/{conversation_id}", response_model=ConversationSummary)
 async def update_conversation(
     conversation_id: UUID,
@@ -66,6 +69,7 @@ async def update_conversation(
     return await service.update_group_conversation(conversation_id, user_id, payload.title)
 
 
+
 @router.delete("/conversations/{conversation_id}")
 async def delete_conversation(
     conversation_id: UUID,
@@ -75,3 +79,4 @@ async def delete_conversation(
     service = ConversationService(ConversationRepository(db))
     await service.delete_conversation(conversation_id, user_id)
     return {"detail": "Conversation deleted"}
+

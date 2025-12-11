@@ -19,7 +19,7 @@ async def test_change_avatar_for_all_users(client, ensure_test_users):
     for idx, u in enumerate(ensure_test_users):
         new_url = f"{base_urls[idx % len(base_urls)]}?t={idx}"
         resp = await client.patch(
-            "/api/users/me/avatar",
+            "/users/me/avatar",
             headers=_auth(u["token"]),
             json={"avatar_url": new_url},
         )
@@ -28,6 +28,6 @@ async def test_change_avatar_for_all_users(client, ensure_test_users):
         assert updated.get("avatar_url") == new_url
 
         # Verify /api/auth/me reflects change
-        me = await client.get("/api/auth/me", headers=_auth(u["token"]))
+        me = await client.get("/auth/me", headers=_auth(u["token"]))
         assert me.status_code == 200, me.text
         assert me.json().get("avatar_url") == new_url

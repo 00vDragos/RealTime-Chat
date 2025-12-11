@@ -6,15 +6,34 @@ from app.services.auth import login_user
 
 router = APIRouter()
 
-@router.post("/api/auth/login",
-             response_model=TokenResponse,
-             summary="Login user",
-             description="Authenticate user with email and password"
+@router.post(
+    "/auth/login",
+    response_model=TokenResponse,
+    summary="Login user",
+    description="Authenticate user with email and password"
 )
 async def login(
     data: UserLogin,
-    db: AsyncSession = Depends(get_db)) -> TokenResponse:
-    
+    db: AsyncSession = Depends(get_db)
+) -> TokenResponse:
+    result = await login_user(
+        email=data.email,
+        password=data.password,
+        db=db
+    )
+    return TokenResponse(**result)
+
+# Compatibility: serve /api path with same handler
+@router.post(
+    "/api/auth/login",
+    response_model=TokenResponse,
+    summary="Login user [api]",
+    description="Authenticate user with email and password (api path)"
+)
+async def login_api(
+    data: UserLogin,
+    db: AsyncSession = Depends(get_db)
+) -> TokenResponse:
     result = await login_user(
         email=data.email,
         password=data.password,

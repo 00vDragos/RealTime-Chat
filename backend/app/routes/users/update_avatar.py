@@ -16,7 +16,7 @@ class UpdateAvatarRequest(BaseModel):
 
 
 @router.patch(
-    "/api/users/me/avatar",
+    "/users/me/avatar",
     response_model=UserResponse,
     status_code=status.HTTP_200_OK,
     summary="Update current user's avatar URL",
@@ -51,3 +51,5 @@ async def update_avatar(
         created_at=user.created_at.isoformat() if user.created_at else None,
         updated_at=user.updated_at.isoformat() if user.updated_at else None,
     )
+
+# Removed /api avatar alias

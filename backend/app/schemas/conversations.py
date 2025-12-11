@@ -19,8 +19,9 @@ class ConversationRead(ConversationBase):
     last_message_preview: Optional[str] = None
     last_message_created_at: Optional[datetime] = None
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 

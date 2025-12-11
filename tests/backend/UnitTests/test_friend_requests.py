@@ -53,8 +53,8 @@ async def test_friend_request_accept_decline(client, ensure_test_users):
     b = "yyy@test.com"
 
     # Resolve UUIDs for A and B via /api/auth/me
-    resp_me_a = await client.get("/api/auth/me", headers=_auth(tokens[a]))
-    resp_me_b = await client.get("/api/auth/me", headers=_auth(tokens[b]))
+    resp_me_a = await client.get("/auth/me", headers=_auth(tokens[a]))
+    resp_me_b = await client.get("/auth/me", headers=_auth(tokens[b]))
     assert resp_me_a.status_code == 200 and resp_me_b.status_code == 200
     a_id = resp_me_a.json().get("id")
     b_id = resp_me_b.json().get("id")

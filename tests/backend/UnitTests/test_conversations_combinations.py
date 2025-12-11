@@ -19,12 +19,12 @@ async def test_create_direct_conversations_for_pairs(client, ensure_test_users):
         # so we first create a lookup by calling /api/auth/me for each email
         user_ids = {}
         for e in emails:
-            rme = await client.get("/api/auth/me", headers=_auth(tokens[e]))
+            rme = await client.get("/auth/me", headers=_auth(tokens[e]))
             assert rme.status_code == 200
             user_ids[e] = rme.json()["id"]
 
         resp = await client.post(
-            "/api/messages/new_conversation",
+            "/messages/new_conversation",
             headers=_auth(tokens[a]),
             json={"participant_ids": [user_ids[b]]},
         )
@@ -33,7 +33,7 @@ async def test_create_direct_conversations_for_pairs(client, ensure_test_users):
         # List conversations for both users
         for e in (a, b):
             rlist = await client.get(
-                "/api/messages/conversations",
+                "/messages/conversations",
                 headers=_auth(tokens[e]),
             )
             assert rlist.status_code == 200, rlist.text
@@ -49,13 +49,13 @@ async def test_create_group_conversations_for_triplets(client, ensure_test_users
         # Build participant_ids excluding creator
         user_ids = {}
         for e in group:
-            rme = await client.get("/api/auth/me", headers=_auth(tokens[e]))
+            rme = await client.get("/auth/me", headers=_auth(tokens[e]))
             assert rme.status_code == 200
             user_ids[e] = rme.json()["id"]
         participant_ids = [user_ids[e] for e in group if e != creator]
 
         resp = await client.post(
-            "/api/messages/new_conversation",
+            "/messages/new_conversation",
             headers=_auth(tokens[creator]),
             json={"participant_ids": participant_ids, "group_name": "Test Group"},
         )
@@ -64,7 +64,7 @@ async def test_create_group_conversations_for_triplets(client, ensure_test_users
         # List for all group participants
         for e in group:
             rlist = await client.get(
-                "/api/messages/conversations",
+                "/messages/conversations",
                 headers=_auth(tokens[e]),
             )
             assert rlist.status_code == 200, rlist.text

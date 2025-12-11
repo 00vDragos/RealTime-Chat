@@ -6,7 +6,7 @@ from app.services.auth import logout_user
 
 router = APIRouter()
 
-@router.post("/auth/logout",
+@router.post("/api/auth/logout",
              response_model=MessageResponse,
              summary="Logout user",
              description="Logout user by invalidating the refresh token")

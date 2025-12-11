@@ -111,9 +111,10 @@ class ConversationService:
             # For groups, check if a conversation with the exact participant set already exists
             existing_group = await self.repo.find_conversation_by_participant_set(participants)
             if existing_group:
-                # Prevent creating duplicate group conversations
-                raise ValueError("A conversation with the same participants already exists")
-            conversation = await self.repo.create_conversation(conversation_type, participants)
+                # If it exists, reuse it instead of raising to keep idempotency
+                conversation = existing_group
+            else:
+                conversation = await self.repo.create_conversation(conversation_type, participants)
 
         if conversation_type == "direct":
             # Pick the other participant as 'friend' for direct convo summary
@@ -122,6 +123,11 @@ class ConversationService:
             friend_name = friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown"
             friend_avatar = friend.avatar_url if friend and getattr(friend, "avatar_url", None) else None
             friend_id_out = str(friend_id)
+            # Build participant names list for summary
+            participant_names = []
+            for p in participants:
+                u = await self.repo.get_user(p)
+                participant_names.append(u.display_name if u and getattr(u, "display_name", None) else "Unknown")
         else:
             # Group conversation summary: build participant names and use them as the group title
             participant_names = []

@@ -109,3 +109,26 @@ class ConversationRepository:
             if part_ids == {user_a, user_b}:
                 return conv
         return None
+
+    async def get_participant_ids(self, conversation_id: UUID):
+        stmt = select(ConversationsParticipants.user_id).where(ConversationsParticipants.conversation_id == conversation_id)
+        return (await self.db.execute(stmt)).scalars().all()
+
+    async def find_conversation_by_participant_set(self, participant_ids: list[UUID]):
+        """
+        Find an existing conversation whose participant set exactly matches the provided participant_ids.
+        Returns the Conversations row or None.
+        """
+        # Normalize to set for comparison
+        target_set = set(participant_ids)
+
+        # Query all conversations that have same number of participants as target
+        stmt = select(Conversations).where(Conversations.type.in_(["group", "direct"]))
+        conversations = (await self.db.execute(stmt)).scalars().all()
+
+        for conv in conversations:
+            parts_stmt = select(ConversationsParticipants.user_id).where(ConversationsParticipants.conversation_id == conv.id)
+            part_ids = set((await self.db.execute(parts_stmt)).scalars().all())
+            if part_ids == target_set:
+                return conv
+        return None

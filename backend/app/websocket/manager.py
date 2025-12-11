@@ -3,7 +3,7 @@ from typing import Dict, List
 from fastapi import WebSocket
 from sqlalchemy import select
 
-from app.db.session import AsyncSessionLocal
+from backend.app.db.session import AsyncSessionLocal
 from app.models.messages import Message
 
 

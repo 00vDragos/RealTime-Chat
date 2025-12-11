@@ -47,7 +47,7 @@ class UserResponse(BaseModel):
     display_name: Optional[str] = Field(None, description="Display name for the user")
     avatar_url: Optional[str] = Field(None, description="URL of the user's avatar")
     provider: Optional[str] = Field(None, description="Auth provider (local, google)")
-    provider_sub: Optional[str] = Field(None, description="Provider-specific user ID (for OAuth)")
+    provider_id: Optional[str] = Field(None, description="Provider-specific user ID (for OAuth)")
     created_at: Optional[str] = Field(None, description="Timestamp when the user was created")
     updated_at: Optional[str] = Field(None, description="Timestamp when the user was last updated")
 

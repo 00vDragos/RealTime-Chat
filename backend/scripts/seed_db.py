@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 # App imports (config + models) — keep imports at top for ruff E402
 # -------------------------------------------------------------------
 from backend.app.core.config import settings
-from backend.app.models.users import Users
+from backend.app.models.users import User
 from backend.app.models.conversations import Conversations
 from backend.app.models.conversation_participants import ConversationsParticipants
 from backend.app.models.messages import Message
@@ -53,17 +53,17 @@ def iso_now() -> str:
     return now_utc().isoformat()
 
 
-def create_users(db) -> Dict[str, Users]:
+def create_users(db) -> Dict[str, User]:
     """Create a few demo users (id is UUID)."""
 
     # email is unique, so we can upsert-style by email
-    existing = {u.email: u for u in db.query(Users).all()}
+    existing = {u.email: u for u in db.query(User).all()}
 
     def get_or_create(email: str, display_name: str, provider: str, provider_sub: str) -> Users:
         if email in existing:
             return existing[email]
 
-        user = Users(
+        user = User(
             email=email,
             display_name=display_name,
             avatar_url=None,
@@ -166,7 +166,7 @@ def ensure_participant(db, conversation_id, user_id) -> ConversationsParticipant
 def seed_messages(
     db,
     conversation: Conversations,
-    senders: List[Users],
+    senders: List[User],
     base_texts: List[str],
 ) -> List[Message]:
     """Create a bunch of messages in a conversation."""
@@ -209,7 +209,7 @@ def seed_messages(
     return messages
 
 
-def seed_friend_requests(db, users: Dict[str, Users]) -> None:
+def seed_friend_requests(db, users: Dict[str, User]) -> None:
     """Create a couple of friend requests with different statuses."""
     alice = users["alice"]
     charlie = users["charlie"]
@@ -268,7 +268,7 @@ def seed_message_deletions(db, conversation: Conversations) -> None:
     db.add(deletion)
 
 
-def seed_refresh_tokens(db, users: Dict[str, Users]) -> None:
+def seed_refresh_tokens(db, users: Dict[str, User]) -> None:
     """Create dummy refresh tokens for each user."""
     for name, user in users.items():
         existing = (

@@ -29,7 +29,7 @@ async def get_user(
         display_name=user.display_name,
         avatar_url=user.avatar_url,
         provider=user.provider,
-        provider_sub=user.provider_sub,
+        provider_id=user.provider_id,
         created_at=user.created_at.isoformat() if user.created_at else None,
         updated_at=user.updated_at.isoformat() if user.updated_at else None)
     

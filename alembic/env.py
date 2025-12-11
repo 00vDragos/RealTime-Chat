@@ -8,8 +8,8 @@ from alembic import context
 
 # Import your settings and models metadata
 # Make sure PYTHONPATH allows 'app' import (when running locally set PYTHONPATH='backend')
-from app.core.config import settings
-from app.db.session import Base  # Base.metadata is target_metadata
+from backend.app.core.config import settings
+from backend.app.db.session import Base  # Base.metadata is target_metadata
 
 # this loads the alembic.ini config
 config = context.config
@@ -20,14 +20,14 @@ target_metadata = Base.metadata
 # Alembic's autogenerate only sees tables that have been imported into SQLAlchemy's
 # metadata at runtime. Import the app's model modules here to ensure they are registered.
 try:
-    import app.models.users
-    import app.models.friend_requests
-    import app.models.friendships
-    import app.models.messages
-    import app.models.message_deletions
-    import app.models.conversations
-    import app.models.refresh_tokens
-    import app.models.conversation_participants  # noqa: F401
+    import backend.app.models.users
+    import backend.app.models.friend_requests
+    import backend.app.models.friendships
+    import backend.app.models.messages
+    import backend.app.models.message_deletions
+    import backend.app.models.conversations
+    import backend.app.models.refresh_tokens
+    import backend.app.models.conversation_participants  # noqa: F401
 except Exception:
     pass
 

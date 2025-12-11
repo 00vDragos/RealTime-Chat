@@ -59,7 +59,7 @@ def create_users(db) -> Dict[str, User]:
     # email is unique, so we can upsert-style by email
     existing = {u.email: u for u in db.query(User).all()}
 
-    def get_or_create(email: str, display_name: str, provider: str, provider_sub: str) -> User:
+    def get_or_create(email: str, display_name: str, provider: str, provider_id: str) -> User:
         if email in existing:
             return existing[email]
 
@@ -68,7 +68,7 @@ def create_users(db) -> Dict[str, User]:
             display_name=display_name,
             avatar_url=None,
             provider=provider,
-            provider_sub=provider_sub,
+            provider_id=provider_id,
             created_at=iso_now(),
             updated_at=iso_now(),
         )

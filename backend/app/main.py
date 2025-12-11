@@ -13,6 +13,7 @@ from app.routes.messages.delete_message import router as delete_message_router
 from app.routes.messages.get_messages import router as get_messages_router
 from app.routes.messages.update_last_read import router as update_last_read_router
 from app.routes.messages.conversations import router as conversations_router
+from app.routes.messages.reactions import router as reactions_router
 from app.routes.friends.friends_requests import router as send_friend_request_router
 from app.routes.friends.list_requests import router as list_friend_requests_router
 from app.routes.friends.cancel_request import router as cancel_friend_request_router
@@ -50,6 +51,7 @@ app.include_router(send_message_router, tags=["messages"])
 app.include_router(edit_message_router, tags=["messages"])
 app.include_router(delete_message_router, tags=["messages"])
 app.include_router(conversations_router, tags=["messages"])
+app.include_router(reactions_router, tags=["reactions"])
 
 # Conversations routes
 app.include_router(get_messages_router, tags=["conversation_participants"])

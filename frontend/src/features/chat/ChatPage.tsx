@@ -2,6 +2,7 @@ import SideBar from "./components/layout/SideBar";
 import Navbar from "./components/layout/NavBar";
 import MessagesList from "./components/ui/MessagesList";
 import MessagesInput from "./components/ui/MessagesInput";
+import TypingIndicator from "./components/ui/TypingIndicator";
 import { useChatMessages } from "../../hooks/useChatMessages";
 import { useConversations } from "../../hooks/useConversations";
 
@@ -55,7 +56,13 @@ export default function ChatPage() {
                 {/* Message Input */}
                 {selectedChat && typingParticipants.length > 0 && (
                     <div className="px-6 pb-2 text-sm text-[rgb(var(--muted-foreground))]">
-                        {`${typingParticipants.map((entry) => entry.userName || "Someone").join(", ")} ${typingParticipants.length > 1 ? "are" : "is"} typing...`}
+                        <TypingIndicator
+                            label={`${typingParticipants
+                                .map((entry) => entry.userName || "Someone")
+                                .join(", ")}${typingParticipants.length > 1 ? " are" : " is"} typing`}
+                            avatarUrl={selectedChat.avatar}
+                            fallbackInitial={(selectedChat.name || "").trim().charAt(0)?.toUpperCase() || "U"}
+                        />
                     </div>
                 )}
                 {selectedChat && (

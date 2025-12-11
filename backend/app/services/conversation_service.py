@@ -32,6 +32,10 @@ class ConversationService:
                     "lastMessageTime": conv.last_message_created_at,
                     "unreadCount": unread_count,
                     "participantIds": [str(p) for p in participant_ids],
+                    "participantNames": [
+                        (await self.repo.get_user(p)).display_name if await self.repo.get_user(p) else "Unknown"
+                        for p in participant_ids
+                    ],
                 })
                 continue
 
@@ -52,7 +56,11 @@ class ConversationService:
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
                 "unreadCount": unread_count,
-                "participantIds": [str(friend_id), str(current_user_id)]
+                "participantIds": [str(friend_id), str(current_user_id)],
+                "participantNames": [
+                    friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown",
+                    (await self.repo.get_user(current_user_id)).display_name if await self.repo.get_user(current_user_id) else "You"
+                ]
             })
 
         return result
@@ -85,9 +93,9 @@ class ConversationService:
             # For groups, check if a conversation with the exact participant set already exists
             existing_group = await self.repo.find_conversation_by_participant_set(participants)
             if existing_group:
-                conversation = existing_group
-            else:
-                conversation = await self.repo.create_conversation(conversation_type, participants)
+                # Prevent creating duplicate group conversations
+                raise ValueError("A conversation with the same participants already exists")
+            conversation = await self.repo.create_conversation(conversation_type, participants)
 
         if conversation_type == "direct":
             # Pick the other participant as 'friend' for direct convo summary

@@ -205,6 +205,9 @@ export function useChatMessages(initialChats: Chat[]) {
           });
           return touched ? next : prev;
         });
+        // As a safety net, re-sync this conversation from the backend
+        // so local state (including status flags) matches the DB.
+        void synchronizeConversationMessages(conversationId);
         break;
       }
       case "typing_start": {

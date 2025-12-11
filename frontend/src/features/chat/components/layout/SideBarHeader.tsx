@@ -12,6 +12,7 @@ import NewChatDialog from "../dialogs/NewChatDialog";
 import ManageFriendshipDialog from "../dialogs/ManageFriendshipDialog";
 import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
 import { useLogout } from '@/hooks/useLogout';
+import ChangeAvatarDialog from "../dialogs/ChangeAvatarDialog";
 
 type SideBarHeaderProps = {
   searchQuery: string;
@@ -50,7 +51,9 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <ChangeAvatarDialog triggerLabel="Settings" />
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <ThemeSwitcher />

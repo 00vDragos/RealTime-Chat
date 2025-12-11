@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.init_db import init_db
 from app.core.config import settings
+import app.models  # ensure all models are imported so SQLAlchemy can resolve relationships
 
 # MESSAGE-RELATED ROUTES
 from app.routes.messages.send_message import router as send_message_router

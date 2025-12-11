@@ -36,7 +36,7 @@ async def register_user(
             hashed_password=hashed_pw,
             display_name=display_name,
             provider='local',
-            provider_id=None,
+            provider_sub=None,
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc))
         
@@ -58,7 +58,7 @@ async def register_user(
                 "display_name": new_user.display_name,
                 "avatar_url": new_user.avatar_url,
                 "provider": new_user.provider,
-                "provider_id": new_user.provider_id,
+                "provider_id": new_user.provider_sub,
                 "created_at": new_user.created_at.isoformat() if new_user.created_at else None,
                 "updated_at": new_user.updated_at.isoformat()
             }

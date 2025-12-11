@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy import Column, TIMESTAMP, Index
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from backend.app.db.session import Base
+from app.db.session import Base
 from sqlalchemy import ForeignKey
 
 class Friendship(Base):

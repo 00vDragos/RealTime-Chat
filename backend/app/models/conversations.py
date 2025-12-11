@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, String, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
-from backend.app.db.session import Base
+from app.db.session import Base
 from sqlalchemy import ForeignKey, Text
 from sqlalchemy import TIMESTAMP as SQLTIMESTAMP
 

@@ -2,7 +2,7 @@ import uuid
 from typing import Dict, Any, List
 
 from app.websocket.manager import manager
-from backend.app.db.session import AsyncSessionLocal
+from app.db.session import AsyncSessionLocal
 from app.db.repositories.conversation_participants.get_all_participants import get_participants
 from app.services.conversation_participants.get_participant_name import get_participant_name_service
 

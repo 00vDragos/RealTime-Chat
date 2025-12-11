@@ -1,6 +1,6 @@
 from typing import Callable
 
-from backend.app.db.session import engine, Base
+from app.db.session import engine, Base
 
 async def init_db(
     create_tables: bool = False,

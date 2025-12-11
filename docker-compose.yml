@@ -11,6 +11,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://chat:chatpwd@postgres:5432/chat_db
     volumes:
       - ./backend:/app/backend
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
     depends_on:
       postgres:
         condition: service_healthy

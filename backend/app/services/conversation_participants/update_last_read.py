@@ -8,10 +8,10 @@ async def update_last_read_service(
     conversation_id: uuid.UUID,
     user_id: uuid.UUID,
     message_id: uuid.UUID
-) -> ConversationsParticipants | None:
+) -> tuple[ConversationsParticipants | None, list[uuid.UUID]]:
     try:
-        updated = await update_last_read(db, conversation_id, user_id, message_id)
-        return updated
+        updated, updated_message_ids = await update_last_read(db, conversation_id, user_id, message_id)
+        return updated, updated_message_ids
 
     except Exception:
-        return None
+        return None, []

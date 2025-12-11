@@ -5,55 +5,126 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { useGoogleAuthHandlers } from "@/hooks/useGoogleAuth";
-import { useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEmailPasswordAuth } from "@/hooks/useEmailPasswordAuth";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type LoginSchema = z.infer<typeof loginSchema>;
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { handleIdToken, handleError } = useGoogleAuthHandlers();
-  const googleLoginContainerRef = useRef<HTMLDivElement | null>(null);
-  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const { handleAuthCode, handleError } = useGoogleAuthHandlers();
+  const { login, isSubmitting } = useEmailPasswordAuth();
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  useEffect(() => {
-    // Try to capture the rendered Google button element
-    const tryFindButton = () => {
-      const container = googleLoginContainerRef.current;
-      if (!container) return;
-      const btn = container.querySelector('div[role="button"]') as HTMLDivElement | null;
-      if (btn) {
-        googleButtonRef.current = btn;
+  const onSubmit = async (values: LoginSchema) => {
+    try {
+      await login(values.email, values.password);
+    } catch {
+      // errors are handled inside hook via toast, but prevent form promise rejection
+    }
+  };
+
+  const triggerGoogleLogin = useGoogleLogin({
+    flow: "auth-code",
+    ux_mode: "popup",
+    scope: "openid email profile",
+    redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URI,
+    onSuccess: async (tokenResponse) => {
+      if (tokenResponse.code) {
+        await handleAuthCode(tokenResponse.code);
+        return;
       }
-    };
-    // Initial attempt and a delayed retry to account for async rendering
-    tryFindButton();
-    const id = setTimeout(tryFindButton, 500);
-    return () => clearTimeout(id);
-  }, []);
-  
+      handleError();
+    },
+    onError: () => {
+      handleError();
+    },
+  });
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Sign in to your account</CardTitle>
           <CardDescription>
-            Continue with your Google account
+            Use your email or continue with Google
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="name@example.com" autoComplete="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Signing in..." : "Sign in"}
+                </Button>
+              </form>
+            </Form>
+
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-[rgb(var(--border))]" />
+              <span className="text-xs uppercase tracking-wide text-[rgb(var(--muted-foreground))]">
+                Or continue with
+              </span>
+              <span className="h-px flex-1 bg-[rgb(var(--border))]" />
+            </div>
+
             <Button
               variant="outline"
               type="button"
               className="w-full flex items-center justify-center gap-2 py-6 text-base font-medium"
-              onClick={() => {
-                const btn = googleButtonRef.current;
-                if (btn) {
-                  btn.click();
-                }
-              }}
+              onClick={() => triggerGoogleLogin()}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-5 w-5">
                 <path
@@ -63,21 +134,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               </svg>
               Sign in with Google
             </Button>
-            <div
-              ref={googleLoginContainerRef}
-              className="absolute opacity-0 pointer-events-none"
-              aria-hidden="true"
-            >
-              <GoogleLogin
-                onSuccess={(credentialResponse) => {
-                  handleIdToken(credentialResponse.credential);
-                }}
-                onError={() => {
-                  handleError();
-                }}
-                useOneTap={false}
-              />
-            </div>
           </div>
         </CardContent>
       </Card>

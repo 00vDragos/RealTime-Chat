@@ -1,12 +1,13 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { MoreVertical, Search, MessageCircle } from 'lucide-react';
 
 type NavBarProps = {
     name?: string | null;
+    avatar?: string | null;
 };
 
-export default function NavBar({ name }: NavBarProps) {
+export default function NavBar({ name, avatar }: NavBarProps) {
     const displayName = (name && name.trim().length > 0) ? name : 'Select a chat';
     const initial = (name || '')?.trim().charAt(0)?.toUpperCase() || 'U';
     return (
@@ -14,6 +15,9 @@ export default function NavBar({ name }: NavBarProps) {
             {/* Conversation Avatar/Title */}
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
+                    {avatar && (
+                        <AvatarImage src={avatar} alt={displayName} />
+                    )}
                     <AvatarFallback className="bg-[rgb(var(--destructive))] text-white">
                         {initial}
                     </AvatarFallback>

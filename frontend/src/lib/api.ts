@@ -1,13 +1,20 @@
+import { getStoredAccessToken } from '@/features/auth/storage';
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchJson<T>(path: string, init: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+  const accessToken = getStoredAccessToken();
+  const headers = new Headers(init.headers || {});
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
   const res = await fetch(url, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers || {}),
-    },
+    headers,
     credentials: init.credentials ?? 'include',
   });
   if (!res.ok) {
@@ -103,21 +110,24 @@ export type ConversationSummary = {
   id: string;
   friendId: string;
   friendName: string;
+  friendAvatar?: string | null;
   lastMessage: string;
   lastMessageTime: string; // ISO
   unreadCount: number;
 };
 
-export async function listConversations(): Promise<ConversationSummary[]> {
+export async function listConversations(userId: string): Promise<ConversationSummary[]> {
   // Endpoint defined with router prefix "/api/messages"
   return fetchJson<ConversationSummary[]>(`/api/messages/conversations`, {
     method: 'GET',
+    headers: { 'user-id': userId },
   });
 }
 
-export async function createConversation(participantIds: string[]) {
+export async function createConversation(participantIds: string[], userId: string) {
   return fetchJson(`/api/messages/new_conversation`, {
     method: 'POST',
+    headers: { 'user-id': userId },
     body: JSON.stringify({ participant_ids: participantIds }),
   });
 }
@@ -133,8 +143,68 @@ export type Friend = {
 };
 
 export async function listMyFriends(userId: string): Promise<Friend[]> {
-  return fetchJson<Friend[]>(`/api/friends/list`, {
+  return fetchJson<Friend[]>(`/friends`, {
     method: 'GET',
+    headers: { 'user-id': userId },
+  });
+}
+
+export type FriendRequestUser = {
+  id: string;
+  email: string;
+  display_name?: string | null;
+  avatar_url?: string | null;
+};
+
+export type FriendRequest = {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  status: 'pending' | 'accepted' | 'declined' | 'canceled';
+  created_at?: string;
+  updated_at?: string;
+  from_user?: FriendRequestUser | null;
+  to_user?: FriendRequestUser | null;
+};
+
+export async function listFriendRequests(userId: string, direction?: 'in' | 'out'): Promise<FriendRequest[]> {
+  const params = direction ? `?direction=${direction}` : '';
+  return fetchJson<FriendRequest[]>(`/friends/requests${params}`, {
+    method: 'GET',
+    headers: { 'user-id': userId },
+  });
+}
+
+export async function sendFriendRequest(toEmail: string, userId: string): Promise<FriendRequest> {
+  return fetchJson<FriendRequest>(`/friends/requests`, {
+    method: 'POST',
+    headers: { 'user-id': userId },
+    body: JSON.stringify({ to_email: toEmail }),
+  });
+}
+
+export async function cancelFriendRequest(requestId: string, userId: string) {
+  return fetchJson<{ detail: string }>(`/friends/requests/${requestId}`, {
+    method: 'DELETE',
+    headers: { 'user-id': userId },
+  });
+}
+
+export async function respondToFriendRequest(
+  requestId: string,
+  status: 'accepted' | 'declined',
+  userId: string,
+): Promise<FriendRequest> {
+  return fetchJson<FriendRequest>(`/friends/requests/${requestId}/respond`, {
+    method: 'POST',
+    headers: { 'user-id': userId },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function removeFriend(friendId: string, userId: string) {
+  return fetchJson<{ detail: string }>(`/friends/${friendId}`, {
+    method: 'DELETE',
     headers: { 'user-id': userId },
   });
 }

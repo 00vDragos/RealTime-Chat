@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from fastapi import HTTPException, status
-
 from app.db.repositories.conversation_repo import ConversationRepository
 from app.websocket.manager import manager
 
@@ -10,16 +8,59 @@ class ConversationService:
     def __init__(self, repo: ConversationRepository):
         self.repo = repo
 
+    async def _build_conversation_summary(self, conv, current_user_id: UUID):
+        # Determine unread count
+        last_read_id = await self.repo.get_last_read_message_id(conv.id, current_user_id)
+        unread_count = await self.repo.count_unread_messages(conv.id, current_user_id, last_read_id)
+
+        # Participant IDs and names
+        part_ids = await self.repo.get_participant_ids(conv.id)
+        participantIds = [str(pid) for pid in part_ids]
+        participantNames = []
+        for pid in part_ids:
+            u = await self.repo.get_user(pid)
+            participantNames.append(u.display_name if u and getattr(u, "display_name", None) else "Unknown")
+
+        friendId = None
+        friendName = None
+        friendAvatar = None
+        friendProvider = None
+        friendIsOnline = False
+        friendLastSeen = None
+
+        if conv.type == "direct":
+            other_id = await self.repo.get_other_participant(conv.id, current_user_id)
+            if other_id:
+                other = await self.repo.get_user(other_id)
+                friendId = str(other_id)
+                friendName = other.display_name if other and getattr(other, "display_name", None) else "Unknown"
+                friendAvatar = other.avatar_url if other and getattr(other, "avatar_url", None) else None
+                friendProvider = getattr(other, "provider", None)
+                friendIsOnline = manager.is_online(str(other_id))
+                friendLastSeen = getattr(other, "last_seen", None)
+        else:
+            # Group: title or joined names excluding current user
+            names_excl_me = [name for pid, name in zip(part_ids, participantNames) if str(pid) != str(current_user_id)]
+            friendName = ", ".join(names_excl_me) if names_excl_me else ", ".join(participantNames)
+
+        return {
+            "id": str(conv.id),
+            "friendId": friendId,
+            "friendName": friendName,
+            "friendAvatar": friendAvatar,
+            "friendProvider": friendProvider,
+            "friendIsOnline": friendIsOnline,
+            "friendLastSeen": friendLastSeen,
+            "lastMessage": conv.last_message_preview,
+            "lastMessageTime": conv.last_message_created_at,
+            "unreadCount": unread_count,
+            "participantIds": participantIds,
+            "participantNames": participantNames,
+        }
+
     async def list_conversations(self, current_user_id: UUID):
         conversations = await self.repo.get_conversations_for_user(current_user_id)
-        result = []
-
-        for conv in conversations:
-            summary = await self._build_conversation_summary(conv, current_user_id)
-            if summary:
-                result.append(summary)
-
-        return result
+        return [await self._build_conversation_summary(conv, current_user_id) for conv in conversations]
 
     async def create_conversation(self, current_user_id: UUID, participant_ids: list[UUID]):
         participants = list(participant_ids) if participant_ids is not None else []
@@ -36,52 +77,9 @@ class ConversationService:
             other = others[0]
             user_a, user_b = sorted([current_user_id, other], key=lambda x: str(x))
             existing = await self.repo.find_direct_conversation_by_participants(user_a, user_b)
-            if existing:
-                conversation = existing
-            else:
-                conversation = await self.repo.create_conversation(conversation_type, participants)
+            conversation = existing or await self.repo.create_conversation(conversation_type, participants)
         else:
             existing_group = await self.repo.find_conversation_by_participant_set(participants)
-            if existing_group:
-                # If it exists, reuse it instead of raising to keep idempotency
-                conversation = existing_group
-            else:
-                conversation = await self.repo.create_conversation(conversation_type, participants)
+            conversation = existing_group or await self.repo.create_conversation(conversation_type, participants)
 
-        if conversation_type == "direct":
-            # Pick the other participant as 'friend' for direct convo summary
-            friend_id = others[0]
-            friend = await self.repo.get_user(friend_id)
-            friend_name = friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown"
-            friend_avatar = friend.avatar_url if friend and getattr(friend, "avatar_url", None) else None
-            friend_id_out = str(friend_id)
-            # Build participant names list for summary
-            participant_names = []
-            for p in participants:
-                u = await self.repo.get_user(p)
-                participant_names.append(u.display_name if u and getattr(u, "display_name", None) else "Unknown")
-        else:
-            # Group conversation summary: build participant names and use them as the group title
-            participant_names = []
-            for p in participants:
-                user = await self.repo.get_user(p)
-                participant_names.append(user.display_name if user and getattr(user, "display_name", None) else "Unknown")
-
-            friend_name = ", ".join(participant_names)
-            friend_avatar = None
-            friend_id_out = None
-
-        summary = {
-            "id": str(conversation.id),
-            "friendId": friend_id_out,
-            "friendName": friend_name,
-            "friendAvatar": friend_avatar,
-            "friendProvider": friend.provider if friend else None,
-            "friendIsOnline": manager.is_online(str(friend_id)),
-            "friendLastSeen": friend.last_seen if friend else None,
-            "lastMessage": preview,
-            "lastMessageTime": conv.last_message_created_at,
-            "unreadCount": unread_count,
-            "participantIds": [str(friend_id), str(current_user_id)],
-            "participantNames": [friend_name, current_name],
-        }
+        return await self._build_conversation_summary(conversation, current_user_id)

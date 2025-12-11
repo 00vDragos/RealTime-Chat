@@ -69,7 +69,7 @@ export default function ChangeAvatarDialog({ triggerLabel = 'Settings' }: Change
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">{triggerLabel}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="text-[rgb(var(--foreground))]">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>Change your avatar URL.</DialogDescription>

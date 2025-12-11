@@ -38,5 +38,7 @@ export type Chat = {
   isBot?: boolean;
   isOnline?: boolean;
   lastSeen?: string | null;
+  participantIds?: string[];
+  participantNames?: string[];
 };
 

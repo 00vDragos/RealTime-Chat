@@ -158,6 +158,19 @@ export async function createConversation(participantIds: string[], userId: strin
   });
 }
 
+export async function updateConversation(conversationId: string, payload: { title: string }) {
+  return fetchJson(`/api/messages/conversations/${conversationId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteConversation(conversationId: string) {
+  return fetchJson<{ detail: string }>(`/api/messages/conversations/${conversationId}`, {
+    method: 'DELETE',
+  });
+}
+
 // ------------------------------------------------------------------
 // Friends API
 // ------------------------------------------------------------------

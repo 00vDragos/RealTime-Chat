@@ -9,6 +9,8 @@ import {
   addMessageReaction as apiAddMessageReaction,
   changeMessageReaction as apiChangeMessageReaction,
   removeMessageReaction as apiRemoveMessageReaction,
+  updateConversation as apiUpdateConversation,
+  deleteConversation as apiDeleteConversation,
 } from "../lib/api";
 import { mapBackendToMessage, deriveReactionState } from "@/lib/chat/mapBackendToMessage";
 import { useAuthUserId } from "@/features/auth/useAuthSession";
@@ -510,6 +512,37 @@ export function useChatMessages(initialChats: Chat[]) {
     })();
   }, [selectedChatId, authUserId]);
 
+  const renameConversation = useCallback(async (conversationId: string, newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) {
+      throw new Error("Conversation name cannot be empty");
+    }
+    try {
+      await apiUpdateConversation(conversationId, { title: trimmed });
+      setChatsState((prev) => prev.map((chat) => (chat.id === conversationId ? { ...chat, name: trimmed } : chat)));
+    } catch (error) {
+      console.warn("Failed to rename conversation", error);
+      throw error;
+    }
+  }, []);
+
+  const deleteConversation = useCallback(async (conversationId: string) => {
+    try {
+      await apiDeleteConversation(conversationId);
+      setChatsState((prev) => prev.filter((chat) => chat.id !== conversationId));
+      setTypingMap((prev) => {
+        if (!prev[conversationId]) return prev;
+        const clone = { ...prev };
+        delete clone[conversationId];
+        return clone;
+      });
+      setSelectedChatId((prev) => (prev === conversationId ? null : prev));
+    } catch (error) {
+      console.warn("Failed to delete conversation", error);
+      throw error;
+    }
+  }, []);
+
   return {
     chatsState,
     selectedChatId,
@@ -523,6 +556,8 @@ export function useChatMessages(initialChats: Chat[]) {
     handleSend,
     handleReaction,
     handleDelete,
+    renameConversation,
+    deleteConversation,
     typingParticipants,
   } as const;
 }

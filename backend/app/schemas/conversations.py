@@ -27,7 +27,7 @@ class ConversationRead(ConversationBase):
 
 class ConversationSummary(BaseModel):
     id: uuid.UUID
-    friend_id: uuid.UUID | None = Field(alias="friendId", default=None)
+    friend_id: Optional[uuid.UUID] = Field(alias="friendId", default=None)
     friend_name: str = Field(alias="friendName")
     friend_avatar: str | None = Field(alias="friendAvatar", default=None)
     friend_provider: str | None = Field(alias="friendProvider", default=None)

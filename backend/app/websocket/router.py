@@ -3,12 +3,15 @@ import json
 from fastapi import WebSocket, WebSocketDisconnect, APIRouter
 from app.websocket.manager import manager
 from app.websocket.events.typing import handle_typing
+from app.websocket.events.presence import handle_presence_change
 
 router = APIRouter()
 
 @router.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str) -> None:
-    await manager.connect(user_id, websocket)
+    became_online = await manager.connect(user_id, websocket)
+    if became_online:
+        await handle_presence_change(user_id, True)
 
     try:
         while True:
@@ -25,6 +28,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str) -> None:
             
 
     except WebSocketDisconnect:
-        manager.disconnect(user_id, websocket)
+        went_offline = manager.disconnect(user_id, websocket)
+        if went_offline:
+            await handle_presence_change(user_id, False)
     except Exception:
-        manager.disconnect(user_id, websocket)
+        went_offline = manager.disconnect(user_id, websocket)
+        if went_offline:
+            await handle_presence_change(user_id, False)
+        raise

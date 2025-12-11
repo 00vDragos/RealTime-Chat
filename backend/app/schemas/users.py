@@ -16,5 +16,6 @@ class UserRead(UserBase):
     id: uuid.UUID
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    last_seen: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

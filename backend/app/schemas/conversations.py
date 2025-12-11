@@ -31,6 +31,8 @@ class ConversationSummary(BaseModel):
     friend_name: str = Field(alias="friendName")
     friend_avatar: str | None = Field(alias="friendAvatar", default=None)
     friend_provider: str | None = Field(alias="friendProvider", default=None)
+    friend_is_online: bool = Field(alias="friendIsOnline", default=False)
+    friend_last_seen: datetime | None = Field(alias="friendLastSeen", default=None)
     last_message: str | None = Field(alias="lastMessage")
     last_message_time: datetime | None = Field(alias="lastMessageTime")
     unread_count: int = Field(alias="unreadCount")

@@ -19,14 +19,22 @@ export default function ConversationCard({ chat, selected, onClick }: Conversati
             }
         >
             {/* Avatar */}
-            <Avatar className="h-12 w-12">
-                {chat.avatar && (
-                    <AvatarImage src={chat.avatar} alt={chat.name} />
-                )}
-                <AvatarFallback className="bg-[rgb(var(--destructive))] text-[rgb(var(--foreground))]">
-                    {chat.name?.trim().charAt(0)?.toUpperCase() || "?"}
-                </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+                <Avatar className="h-12 w-12">
+                    {chat.avatar && (
+                        <AvatarImage src={chat.avatar} alt={chat.name} />
+                    )}
+                    <AvatarFallback className="bg-[rgb(var(--destructive))] text-[rgb(var(--foreground))]">
+                        {chat.name?.trim().charAt(0)?.toUpperCase() || "?"}
+                    </AvatarFallback>
+                </Avatar>
+                <span
+                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[rgb(var(--background))] ${
+                      chat.isOnline ? 'bg-emerald-500' : 'bg-[rgb(var(--muted-foreground))]'
+                    }`}
+                    aria-label={chat.isOnline ? 'Online' : 'Offline'}
+                  />
+            </div>
 
             {/* Chat Info */}
             <div className="flex-1 ml-3 min-w-0">

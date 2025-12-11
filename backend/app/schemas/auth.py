@@ -50,6 +50,7 @@ class UserResponse(BaseModel):
     provider_id: Optional[str] = Field(None, description="Provider-specific user ID (for OAuth)")
     created_at: Optional[str] = Field(None, description="Timestamp when the user was created")
     updated_at: Optional[str] = Field(None, description="Timestamp when the user was last updated")
+    last_seen: Optional[str] = Field(None, description="Timestamp when the user was last online")
 
 class TokenResponse(BaseModel):
     """Schema for authentication response with tokens"""

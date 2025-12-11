@@ -6,6 +6,7 @@ import { useAuthUserId } from "@/features/auth/useAuthSession";
 function mapSummaryToChat(s: ConversationSummary): Chat {
   return {
     id: s.id,
+    friendId: s.friendId ?? null,
     name: s.friendName ?? "",
     avatar: s.friendAvatar ?? null,
     lastMessage: s.lastMessage ?? "",
@@ -13,6 +14,8 @@ function mapSummaryToChat(s: ConversationSummary): Chat {
     unread: s.unreadCount ?? 0,
     messages: [],
     isBot: s.friendProvider === "openai",
+    isOnline: s.friendIsOnline ?? false,
+    lastSeen: s.friendLastSeen ?? null,
   };
 }
 

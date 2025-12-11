@@ -28,6 +28,13 @@ POSTGRES_PORT=<DB_PORT>
 
 
 DATABASE_URL=postgresql+asyncpg://<POSTGRES_USER>:<POSTGRES_PASSWORD>@<DB_HOST>:<DB_PORT>/<POSTGRES_DB>
+DEBUG=0
+ALLOWED_ORIGINS=http://localhost:5173
+JWT_SECRET=<your_jwt_secret>
+JWT_ALG=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+GOOGLE_CLIENT_ID=<google_client_id>
+GOOGLE_CLIENT_SECRET=<google_client_secret>
 ```
 
 Frontend `frontend/.env` example content:

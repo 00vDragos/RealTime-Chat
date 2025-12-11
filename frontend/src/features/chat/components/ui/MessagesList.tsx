@@ -8,9 +8,10 @@ type MessagesListProps = {
   messages: Message[];
   onEdit?: (msg: Message) => void;
   onDelete?: (msg: Message) => void;
+  onReact?: (msg: Message, emoji: string) => void;
 };
 
-function MessagesListComponent({ messages, onEdit, onDelete }: MessagesListProps) {
+function MessagesListComponent({ messages, onEdit, onDelete, onReact }: MessagesListProps) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -23,7 +24,13 @@ function MessagesListComponent({ messages, onEdit, onDelete }: MessagesListProps
     <ScrollArea className="w-full h-full" type="always">
       <div className="flex flex-col gap-4">
         {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} onEdit={onEdit} onDelete={onDelete} />
+          <MessageBubble
+            key={msg.id}
+            message={msg}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onReact={onReact}
+          />
         ))}
         <div ref={bottomRef} />
       </div>

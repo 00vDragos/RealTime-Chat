@@ -1,8 +1,8 @@
 import json
 
 from fastapi import WebSocket, WebSocketDisconnect, APIRouter
-from backend.app.websocket.manager import manager
-from backend.app.websocket.events.typing import handle_typing
+from app.websocket.manager import manager
+from app.websocket.events.typing import handle_typing
 
 router = APIRouter()
 

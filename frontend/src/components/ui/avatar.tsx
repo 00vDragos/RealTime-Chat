@@ -21,12 +21,16 @@ function Avatar({
 
 function AvatarImage({
   className,
+  crossOrigin,
+  referrerPolicy,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      className={cn("aspect-square size-full object-cover", className)}
+      crossOrigin={crossOrigin ?? "anonymous"}
+      referrerPolicy={referrerPolicy ?? "no-referrer"}
       {...props}
     />
   )

@@ -54,6 +54,7 @@ export type ChatInboundEvent =
   | { event: 'message_edited'; conversation_id: string; message: ChatInboundMessage }
   | { event: 'message_deleted'; conversation_id: string; message_id: string; deleted_by?: string; deletor_name?: string }
   | { event: 'message_read'; conversation_id: string; message_id: string; user_id: string; user_name?: string; message_ids?: string[] }
+  | { event: 'message_reaction_updated'; conversation_id: string; message_id: string; user_id: string; reactions: Record<string, string[]>; action?: string }
   | { event: TypingEvent; conversation_id: string; user_id: string; sender_name?: string }
   | { event: string; [key: string]: unknown };
 

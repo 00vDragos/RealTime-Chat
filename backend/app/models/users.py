@@ -1,7 +1,7 @@
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, DateTime, func, Index
-from backend.app.db.session import Base
+from app.db.session import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -11,11 +11,15 @@ class User(Base):
     display_name = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     provider = Column(String, nullable=True)  # e.g., 'google', 'facebook'
-    provider_id = Column(String, unique=True, nullable=True)  # ID from the OAuth provider
+    provider_sub = Column(String, unique=True, nullable=True)  # provider-specific subject/ID
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)  # ISO formatted datetime string
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False) 
 
     __table_args__ = (
         Index("idx_users_email", "email"),
     )
+
+
+# Provide table metadata alias expected by repositories
+users = User.__table__
 

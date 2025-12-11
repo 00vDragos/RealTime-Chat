@@ -3,6 +3,7 @@ import type { Chat } from "../../types";
 import { createConversation } from "@/lib/api";
 import SideBarHeader from "./SideBarHeader";
 import ConversationsList from "../ui/ConversationsList";
+import { useAuthUserId } from '@/features/auth/useAuthSession';
 
 type SideBarProps = {
     chats: Chat[];
@@ -13,6 +14,7 @@ type SideBarProps = {
 
 export default function SideBar({ chats, selectedChatId, setSelectedChatId, onConversationCreated }: SideBarProps) {
     const [searchQuery, setSearchQuery] = useState('');
+    const userId = useAuthUserId();
 
     const filteredChats = (chats ?? []).filter(chat => {
         const name = (chat?.name ?? '').toLowerCase();
@@ -22,10 +24,10 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId, onCo
     // Handler for starting a new chat with multiple contacts
     const handleStartChat = async (contactIds: (number | string)[]) => {
         try {
-            if (!contactIds.length) return;
+            if (!contactIds.length || !userId) return;
             // Create a conversation with selected participant IDs (strings)
             const participantIds = contactIds.map(String);
-            const res = await createConversation(participantIds);
+            const res = await createConversation(participantIds, userId);
             // Expect backend to return conversation info; if only 201/no body, you may need to refetch list
             if (onConversationCreated) {
                 onConversationCreated(res);

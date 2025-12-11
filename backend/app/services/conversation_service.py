@@ -40,6 +40,9 @@ class ConversationService:
                 continue
 
             friend = await self.repo.get_user(friend_id)
+            friend_avatar = None
+            if friend and getattr(friend, "avatar_url", None):
+                friend_avatar = friend.avatar_url
 
             preview = conv.last_message_preview or ""
             if preview.strip().lower() == "__deleted__":
@@ -53,6 +56,7 @@ class ConversationService:
                 "id": str(conv.id),
                 "friendId": str(friend_id),
                 "friendName": friend.display_name if friend else "Unknown",
+                "friendAvatar": friend_avatar,
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
                 "unreadCount": unread_count,
@@ -102,16 +106,19 @@ class ConversationService:
             friend_id = others[0]
             friend = await self.repo.get_user(friend_id)
             friend_name = friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown"
+            friend_avatar = friend.avatar_url if friend and getattr(friend, "avatar_url", None) else None
             friend_id_out = str(friend_id)
         else:
             # Group conversation summary
             friend_name = f"Group ({len(participants)} members)"
+            friend_avatar = None
             friend_id_out = None
 
         summary = {
             "id": str(conversation.id),
             "friendId": friend_id_out,
             "friendName": friend_name,
+            "friendAvatar": friend_avatar,
             "lastMessage": None,
             "lastMessageTime": None,
             "unreadCount": 0,

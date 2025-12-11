@@ -11,6 +11,7 @@ import {
 import NewChatDialog from "../dialogs/NewChatDialog";
 import ManageFriendshipDialog from "../dialogs/ManageFriendshipDialog";
 import { ThemeSwitcher } from '@/theme/ThemeSwitcher';
+import { useLogout } from '@/hooks/useLogout';
 
 type SideBarHeaderProps = {
   searchQuery: string;
@@ -19,6 +20,8 @@ type SideBarHeaderProps = {
 };
 
 export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat }: SideBarHeaderProps) {
+  const { logout, isLoggingOut } = useLogout();
+
   return (
     <div className="bg-[rgb(var(--background))] px-4 py-3 border-b">
       <div className="flex items-center justify-between mb-3">
@@ -42,7 +45,16 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
                 <ThemeSwitcher />
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive">Logout</DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isLoggingOut}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  logout();
+                }}
+              >
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

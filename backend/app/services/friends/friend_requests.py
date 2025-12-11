@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from typing import List
 
 from sqlalchemy import delete
+from sqlalchemy.orm import selectinload
 
 from app.models.users import User
 from app.models.friend_requests import FriendRequest
@@ -64,13 +65,15 @@ class FriendRequestService:
         fr = FriendRequest(from_user_id=from_user_id, to_user_id=to_user.id, status="pending")
         db.add(fr)
         await db.flush()
-        await db.refresh(fr)
-        # commit here or let caller commit depending on your transaction pattern
         await db.commit()
+        await db.refresh(fr, attribute_names=["from_user", "to_user"])
         return fr
 
     async def list_requests(db: AsyncSession, user_id: UUID, direction: Optional[str] = None) -> List[FriendRequest]:
-        stmt = select(FriendRequest)
+        stmt = select(FriendRequest).options(
+            selectinload(FriendRequest.from_user),
+            selectinload(FriendRequest.to_user),
+        )
         if direction == "in":
             stmt = stmt.where(FriendRequest.to_user_id == user_id)
         elif direction == "out":
@@ -84,7 +87,10 @@ class FriendRequestService:
 
     async def cancel_request(db: AsyncSession, user_id: UUID, request_id: UUID) -> None:
         # Only sender can cancel
-        stmt = select(FriendRequest).where(FriendRequest.id == request_id)
+        stmt = select(FriendRequest).options(
+            selectinload(FriendRequest.from_user),
+            selectinload(FriendRequest.to_user),
+        ).where(FriendRequest.id == request_id)
         res = await db.execute(stmt)
         fr = res.scalars().first()
         if not fr:
@@ -125,7 +131,10 @@ class FriendRequestService:
 
     async def respond_request(db: AsyncSession, user_id: UUID, request_id: UUID, status: str) -> FriendRequest:
         # load friend request
-        stmt = select(FriendRequest).where(FriendRequest.id == request_id)
+        stmt = select(FriendRequest).options(
+            selectinload(FriendRequest.from_user),
+            selectinload(FriendRequest.to_user),
+        ).where(FriendRequest.id == request_id)
         res = await db.execute(stmt)
         fr = res.scalars().first()
         if not fr:
@@ -153,8 +162,8 @@ class FriendRequestService:
                 db.add(friendship)
 
         await db.flush()
-        await db.refresh(fr)
         await db.commit()
+        await db.refresh(fr, attribute_names=["from_user", "to_user"])
 
         # optional notification broadcast to both users
         try:

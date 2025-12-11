@@ -1,3 +1,9 @@
+export type MessageReadEntry = {
+  userId: string;
+  label: string;
+  at: string;
+};
+
 export type Message = {
   id: string;
   text: string;
@@ -6,12 +12,16 @@ export type Message = {
   isDeleted?: boolean;
   isEdited?: boolean;
   status?: "sent" | "delivered" | "seen";
+  deliveredAt?: string | null;
+  seenAt?: string | null;
+   deliveredBy?: MessageReadEntry[];
+   seenBy?: MessageReadEntry[];
 };
 
 export type Chat = {
   id: string;
   name: string;
-  avatar: string;
+  avatar: string | null;
   lastMessage: string;
   timestamp: string;
   unread: number;

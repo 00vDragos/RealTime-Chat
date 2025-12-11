@@ -7,6 +7,7 @@ import { MessageCirclePlus } from "lucide-react";
 
 import { listMyFriends, type Friend } from "@/lib/api";
 import { FriendListItem } from "./FriendListItem";
+import { useAuthUserId } from "@/features/auth/useAuthSession";
 
 export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: (number | string)[]) => void }) {
   const [open, setOpen] = useState(false);
@@ -15,17 +16,19 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: (nu
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // TODO: Replace with real authenticated user id from auth state
-  const USER_ID = "1eb0fa76-fad3-4dd2-9536-ec257c29bba3";
+  const userId = useAuthUserId();
 
   useEffect(() => {
     if (!open) return;
+    if (!userId) {
+      setError("You must be logged in to load friends.");
+      return;
+    }
     (async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await listMyFriends(USER_ID);
+        const res = await listMyFriends(userId);
         setFriends(res);
       } catch (e: any) {
         setError(e?.message ?? "Failed to load friends");
@@ -33,7 +36,7 @@ export default function NewChatDialog({ onSelect }: { onSelect: (contactIds: (nu
         setLoading(false);
       }
     })();
-  }, [open]);
+  }, [open, userId]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();

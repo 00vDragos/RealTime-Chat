@@ -111,6 +111,7 @@ export type ConversationSummary = {
   friendId: string;
   friendName: string;
   friendAvatar?: string | null;
+  friendProvider?: string | null;
   lastMessage: string;
   lastMessageTime: string; // ISO
   unreadCount: number;
@@ -140,6 +141,7 @@ export type Friend = {
   email: string;
   display_name?: string;
   avatar_url?: string | null;
+  provider?: string;
 };
 
 export async function listMyFriends(userId: string): Promise<Friend[]> {

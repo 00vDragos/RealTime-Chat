@@ -1,5 +1,7 @@
 import type { Message } from "../../types";
 import { memo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,7 +54,9 @@ function MessageBubbleComponent({ message, onEdit, onDelete }: MessageBubbleProp
           ) : (
             <>
               <div className="font-semibold text-xs text-[rgb(var(--muted-foreground))] mb-1">{message.sender}</div>
-              <div className="text-[rgb(var(--foreground))]">{message.text}</div>
+              <div className="prose prose-sm max-w-none text-[rgb(var(--foreground))]">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.text}</ReactMarkdown>
+              </div>
               <div className="text-xs text-[rgb(var(--muted-foreground))] mt-1 text-right flex items-center gap-1 justify-end">
                 <span>{message.time}</span>
                 {message.isEdited ? <span className="italic">· Edited</span> : null}

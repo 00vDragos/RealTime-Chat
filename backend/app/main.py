@@ -81,3 +81,4 @@ async def on_startup():
     # In development we create tables for convenience. In production use Alembic migrations.
     if settings.DEBUG:
         await init_db(create_tables=True)
+

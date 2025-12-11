@@ -1,4 +1,4 @@
-import { Search, MoreVertical} from 'lucide-react';
+import { Search, MoreVertical, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,9 +17,11 @@ type SideBarHeaderProps = {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   onStartChat: (contactIds: (string | number)[]) => void;
+  onStartAIBotChat: () => void;
+  aiLoading: boolean;
 };
 
-export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat }: SideBarHeaderProps) {
+export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat, onStartAIBotChat, aiLoading }: SideBarHeaderProps) {
   const { logout, isLoggingOut } = useLogout();
 
   return (
@@ -28,6 +30,15 @@ export default function SideBarHeader({ searchQuery, setSearchQuery, onStartChat
         <h1 className="text-xl font-semibold text-[rgb(var(--foreground))]">Chats</h1>
         <div className="flex">
 
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Chat with OpenAI"
+            onClick={onStartAIBotChat}
+            disabled={aiLoading}
+          >
+            <Sparkles className="h-5 w-5 text-[rgb(var(--muted-foreground))]" />
+          </Button>
           <NewChatDialog onSelect={onStartChat} />
           <ManageFriendshipDialog />
 

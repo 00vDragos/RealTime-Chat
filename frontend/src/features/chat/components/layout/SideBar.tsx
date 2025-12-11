@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Chat } from "../../types";
-import { createConversation } from "@/lib/api";
+import { createConversation, listMyFriends } from "@/lib/api";
 import SideBarHeader from "./SideBarHeader";
 import ConversationsList from "../ui/ConversationsList";
 import { useAuthUserId } from '@/features/auth/useAuthSession';
@@ -15,6 +15,7 @@ type SideBarProps = {
 export default function SideBar({ chats, selectedChatId, setSelectedChatId, onConversationCreated }: SideBarProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const userId = useAuthUserId();
+    const [aiLoading, setAiLoading] = useState(false);
 
     const filteredChats = (chats ?? []).filter(chat => {
         const name = (chat?.name ?? '').toLowerCase();
@@ -40,6 +41,31 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId, onCo
         }
     };
 
+    const handleStartAIBotChat = async () => {
+        if (!userId) return;
+        setAiLoading(true);
+        try {
+            const friends = await listMyFriends(userId);
+            const aiFriend = friends.find(f => f.provider === "openai");
+            if (!aiFriend) {
+                console.warn("OpenAI contact is not available yet");
+                return;
+            }
+            const res = await createConversation([aiFriend.id], userId);
+            if (onConversationCreated) {
+                onConversationCreated(res);
+            }
+            const newId = (res as any)?.id ?? null;
+            if (newId) {
+                setSelectedChatId(String(newId));
+            }
+        } catch (e) {
+            console.warn("Failed to start OpenAI chat", e);
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     return (
         <div
             className="h-screen bg-[rgb(var(--background))] border-r flex flex-col overflow-y-auto"
@@ -50,6 +76,8 @@ export default function SideBar({ chats, selectedChatId, setSelectedChatId, onCo
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 onStartChat={handleStartChat}
+                onStartAIBotChat={handleStartAIBotChat}
+                aiLoading={aiLoading}
             />
 
             {/* Conversations List */}

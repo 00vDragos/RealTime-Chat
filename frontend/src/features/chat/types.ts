@@ -26,5 +26,6 @@ export type Chat = {
   timestamp: string;
   unread: number;
   messages: Message[];
+  isBot?: boolean;
 };
 

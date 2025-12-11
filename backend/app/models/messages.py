@@ -17,8 +17,8 @@ class Message(Base):
     delivered_at = Column(JSONB, nullable=True)  # per-recipient map
     seen_at = Column(JSONB, nullable=True)
     edited_at = Column(TIMESTAMP, nullable=True)
-    # mark that message was deleted for everyone
     deleted_for_everyone = Column(Boolean, nullable=False, default=False, server_default="false")
+    reactions = Column(JSONB, nullable=True, server_default='{}')
 
     __table_args__ = (
         Index("idx_messages_conversation_created_at", "conversation_id", "created_at"),

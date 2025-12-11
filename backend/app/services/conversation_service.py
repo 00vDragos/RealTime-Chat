@@ -1,5 +1,6 @@
 from uuid import UUID
 from app.db.repositories.conversation_repo import ConversationRepository
+from app.websocket.manager import manager
 
 
 
@@ -37,7 +38,11 @@ class ConversationService:
                 result.append({
                     "id": str(conv.id),
                     "friendId": None,
-                    "friendName": group_name,
+                    "friendName": f"Group ({len(participant_ids)} members)",
+                    "friendAvatar": None,
+                    "friendProvider": None,
+                    "friendIsOnline": False,
+                    "friendLastSeen": None,
                     "lastMessage": preview,
                     "lastMessageTime": conv.last_message_created_at,
                     "unreadCount": unread_count,
@@ -74,6 +79,8 @@ class ConversationService:
                 "friendName": friend.display_name if friend else "Unknown",
                 "friendAvatar": friend_avatar,
                 "friendProvider": friend.provider if friend else None,
+                "friendIsOnline": manager.is_online(str(friend_id)),
+                "friendLastSeen": friend.last_seen if friend else None,
                 "lastMessage": preview,
                 "lastMessageTime": conv.last_message_created_at,
                 "unreadCount": unread_count,
@@ -115,13 +122,15 @@ class ConversationService:
                 raise ValueError("A conversation with the same participants already exists")
             conversation = await self.repo.create_conversation(conversation_type, participants)
 
+        friend = None
+        friend_uuid: UUID | None = None
         if conversation_type == "direct":
             # Pick the other participant as 'friend' for direct convo summary
-            friend_id = others[0]
-            friend = await self.repo.get_user(friend_id)
+            friend_uuid = others[0]
+            friend = await self.repo.get_user(friend_uuid)
             friend_name = friend.display_name if friend and getattr(friend, "display_name", None) else "Unknown"
             friend_avatar = friend.avatar_url if friend and getattr(friend, "avatar_url", None) else None
-            friend_id_out = str(friend_id)
+            friend_id_out = str(friend_uuid)
         else:
             # Group conversation summary: build participant names and use them as the group title
             participant_names = []
@@ -138,6 +147,9 @@ class ConversationService:
             "friendId": friend_id_out,
             "friendName": friend_name,
             "friendAvatar": friend_avatar,
+            "friendProvider": friend.provider if conversation_type == "direct" and friend else None,
+            "friendIsOnline": manager.is_online(str(friend_uuid)) if conversation_type == "direct" and friend_uuid else False,
+            "friendLastSeen": friend.last_seen if conversation_type == "direct" and friend else None,
             "lastMessage": None,
             "lastMessageTime": None,
             "unreadCount": 0,

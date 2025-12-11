@@ -31,13 +31,16 @@ function mapSummaryToChat(s: ConversationSummary, currentUserId?: string): Chat 
 
   return {
     id: s.id,
-    name: displayName,
+    friendId: s.friendId ?? null,
+    name: s.friendName ?? "",
     avatar: s.friendAvatar ?? null,
     lastMessage: s.lastMessage ?? "",
     timestamp: s.lastMessageTime ?? "",
     unread: s.unreadCount ?? 0,
     messages: [],
     isBot: s.friendProvider === "openai",
+    isOnline: s.friendIsOnline ?? false,
+    lastSeen: s.friendLastSeen ?? null,
   };
 }
 

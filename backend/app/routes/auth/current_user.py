@@ -31,5 +31,7 @@ async def get_user(
         provider=user.provider,
         provider_id=user.provider_id,
         created_at=user.created_at.isoformat() if user.created_at else None,
-        updated_at=user.updated_at.isoformat() if user.updated_at else None)
+        updated_at=user.updated_at.isoformat() if user.updated_at else None,
+        last_seen=user.last_seen.isoformat() if user.last_seen else None,
+    )
     

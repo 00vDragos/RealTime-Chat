@@ -28,6 +28,7 @@ export type Message = {
 
 export type Chat = {
   id: string;
+  friendId?: string | null;
   name: string;
   avatar: string | null;
   lastMessage: string;
@@ -35,5 +36,7 @@ export type Chat = {
   unread: number;
   messages: Message[];
   isBot?: boolean;
+  isOnline?: boolean;
+  lastSeen?: string | null;
 };
 

@@ -129,14 +129,16 @@ export async function updateLastRead(conversationId: string, userId: string, mes
 // Matches backend response from GET /api/messages/conversations
 export type ConversationSummary = {
   id: string;
-  friendId: string;
+  friendId: string | null;
   friendName: string;
   participantIds?: string[];
   participantNames?: string[];
   friendAvatar?: string | null;
   friendProvider?: string | null;
-  lastMessage: string;
-  lastMessageTime: string; // ISO
+  friendIsOnline?: boolean;
+  friendLastSeen?: string | null;
+  lastMessage: string | null;
+  lastMessageTime: string | null; // ISO
   unreadCount: number;
 };
 

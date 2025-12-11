@@ -13,6 +13,7 @@ class User(Base):
     provider = Column(String, nullable=True)  # e.g., 'google', 'facebook'
     provider_id = Column(String, unique=True, nullable=True)  # provider-specific subject/ID
     provider_sub = Column(String, unique=True, nullable=True)
+    last_seen = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)  # ISO formatted datetime string
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False) 
 

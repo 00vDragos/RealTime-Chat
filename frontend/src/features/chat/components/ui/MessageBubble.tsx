@@ -5,6 +5,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Pencil, Trash2, Info, SmilePlus  } from "lucide-react";
 
@@ -65,9 +68,23 @@ function MessageBubbleComponent({ message, onEdit, onDelete }: MessageBubbleProp
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="right" align="start">
-        <DropdownMenuItem className="flex items-center gap-2">
-          <Info className="w-4 h-4 mr-2" /> Info
-        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="flex items-center gap-2">
+            <Info className="w-4 h-4 mr-2" /> Message info
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-56 text-[0.7rem] space-y-1">
+            <div className="font-semibold text-xs">Details</div>
+            <div>Sent: {message.time}</div>
+            {message.deliveredAt && <div>Delivered: {message.deliveredAt}</div>}
+            {message.seenAt && (
+              <div>
+                {message.sender === 'Me'
+                  ? `Seen by you: ${message.seenAt}`
+                  : `Seen: ${message.seenAt}`}
+              </div>
+            )}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         {!message.isDeleted && (
           <>
             <DropdownMenuItem className="flex items-center gap-2">

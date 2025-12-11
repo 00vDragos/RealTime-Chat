@@ -1,5 +1,5 @@
 import type { BackendMessage } from "@/lib/api";
-import type { Message } from "@/features/chat/types";
+import type { Message, MessageReaction } from "@/features/chat/types";
 import { formatTime } from "./formatTime";
 
 function hasTimestamp(ts: unknown): boolean {
@@ -12,6 +12,11 @@ function hasTimestamp(ts: unknown): boolean {
 type ReadMapInfo = {
   entries: NonNullable<Message["seenBy"]>;
   latest: string | null;
+};
+
+export type ReactionState = {
+  normalized: Record<string, string[]>;
+  summary: MessageReaction[];
 };
 
 function mapUserTimeMap(map: unknown, currentUserId: string): ReadMapInfo {
@@ -44,12 +49,38 @@ function mapUserTimeMap(map: unknown, currentUserId: string): ReadMapInfo {
   };
 }
 
+export function deriveReactionState(reactions: unknown, currentUserId: string): ReactionState {
+  const normalized: Record<string, string[]> = {};
+  const summary: MessageReaction[] = [];
+
+  if (!reactions || typeof reactions !== "object") {
+    return { normalized, summary };
+  }
+
+  for (const [emoji, raw] of Object.entries(reactions as Record<string, unknown>)) {
+    if (!Array.isArray(raw)) continue;
+    const userIds = raw.filter((value): value is string => typeof value === "string" && value.length > 0);
+    if (userIds.length === 0) continue;
+    normalized[emoji] = userIds;
+    summary.push({
+      emoji,
+      count: userIds.length,
+      reactedByMe: userIds.includes(currentUserId),
+    });
+  }
+
+  summary.sort((a, b) => (b.count !== a.count ? b.count - a.count : a.emoji.localeCompare(b.emoji)));
+
+  return { normalized, summary };
+}
+
 export function mapBackendToMessage(bm: BackendMessage, userId: string): Message {
   const deliveredInfo = mapUserTimeMap(bm.delivered_at, userId);
   const seenInfo = mapUserTimeMap(bm.seen_at, userId);
   const status: Message["status"] = bm.sender_id === userId
     ? (seenInfo.entries.length ? "seen" : deliveredInfo.entries.length ? "delivered" : "sent")
     : undefined;
+  const reactionState = deriveReactionState(bm.reactions, userId);
   return {
     id: bm.id,
     sender: bm.sender_id === userId ? "Me" : (bm.sender_name || bm.sender_id),
@@ -62,5 +93,7 @@ export function mapBackendToMessage(bm: BackendMessage, userId: string): Message
     seenAt: seenInfo.latest,
     deliveredBy: deliveredInfo.entries,
     seenBy: seenInfo.entries,
+    reactions: Object.keys(reactionState.normalized).length ? reactionState.normalized : undefined,
+    reactionSummary: reactionState.summary.length ? reactionState.summary : undefined,
   };
 }

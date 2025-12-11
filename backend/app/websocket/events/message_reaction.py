@@ -1,10 +1,9 @@
 import uuid
 from typing import Dict, List
 
-from backend.app.websocket.manager import manager
-from backend.app.db.session import AsyncSessionLocal
-from backend.app.db.repositories.conversation_participants.get_all_participants import get_participants
-from backend.app.schemas.messages import MessageRead
+from app.websocket.manager import manager
+from app.db.session import AsyncSessionLocal
+from app.db.repositories.conversation_participants.get_all_participants import get_participants
 
 async def handle_reaction(
         conversation_id: uuid.UUID,

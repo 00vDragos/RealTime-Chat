@@ -54,6 +54,7 @@ export type BackendMessage = {
   seen_at?: Record<string, unknown> | null;
   edited_at?: string | null;
   deleted_for_everyone: boolean;
+  reactions?: Record<string, string[]> | null;
 };
 
 export async function getMessages(conversationId: string, userId: string): Promise<BackendMessage[]> {
@@ -91,6 +92,26 @@ export async function deleteMessage(conversationId: string, messageId: string, u
   return fetchJson<BackendMessageDeletion>(`/conversations/${conversationId}/messages/${messageId}` , {
     method: 'DELETE',
     headers: { 'user-id': userId },
+  });
+}
+
+export async function addMessageReaction(messageId: string, reactionType: string): Promise<BackendMessage> {
+  return fetchJson<BackendMessage>(`/messages/${messageId}/reactions`, {
+    method: 'POST',
+    body: JSON.stringify({ reaction_type: reactionType }),
+  });
+}
+
+export async function changeMessageReaction(messageId: string, reactionType: string): Promise<BackendMessage> {
+  return fetchJson<BackendMessage>(`/messages/${messageId}/reactions`, {
+    method: 'PUT',
+    body: JSON.stringify({ reaction_type: reactionType }),
+  });
+}
+
+export async function removeMessageReaction(messageId: string, reactionType: string): Promise<BackendMessage> {
+  return fetchJson<BackendMessage>(`/messages/${messageId}/reactions/${encodeURIComponent(reactionType)}`, {
+    method: 'DELETE',
   });
 }
 

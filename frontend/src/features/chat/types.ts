@@ -4,6 +4,12 @@ export type MessageReadEntry = {
   at: string;
 };
 
+export type MessageReaction = {
+  emoji: string;
+  count: number;
+  reactedByMe: boolean;
+};
+
 export type Message = {
   id: string;
   text: string;
@@ -16,6 +22,8 @@ export type Message = {
   seenAt?: string | null;
    deliveredBy?: MessageReadEntry[];
    seenBy?: MessageReadEntry[];
+  reactions?: Record<string, string[]>;
+  reactionSummary?: MessageReaction[];
 };
 
 export type Chat = {

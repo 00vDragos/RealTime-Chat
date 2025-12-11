@@ -19,6 +19,7 @@ export default function ChatPage() {
         handleEditStart,
         handleSend,
         handleDelete,
+        handleReaction,
         typingParticipants,
     } = useChatMessages(conversations);
 
@@ -45,6 +46,7 @@ export default function ChatPage() {
                             messages={selectedChat.messages}
                             onEdit={handleEditStart}
                             onDelete={handleDelete}
+                            onReact={handleReaction}
                         />
                     ) : (
                         <div className="flex-1 flex items-center justify-center text-[rgb(var(--muted-foreground))]">

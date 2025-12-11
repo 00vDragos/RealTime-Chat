@@ -6,8 +6,11 @@ import {
   editMessage as apiEditMessage,
   deleteMessage as apiDeleteMessage,
   updateLastRead,
+  addMessageReaction as apiAddMessageReaction,
+  changeMessageReaction as apiChangeMessageReaction,
+  removeMessageReaction as apiRemoveMessageReaction,
 } from "../lib/api";
-import { mapBackendToMessage } from "@/lib/chat/mapBackendToMessage";
+import { mapBackendToMessage, deriveReactionState } from "@/lib/chat/mapBackendToMessage";
 import { useAuthUserId } from "@/features/auth/useAuthSession";
 import { useChatWebSocket } from "./useChatWebSocket";
 import type { ChatInboundEvent, ChatInboundMessage } from "@/lib/chat/realtime";
@@ -210,6 +213,35 @@ export function useChatMessages(initialChats: Chat[]) {
         void synchronizeConversationMessages(conversationId);
         break;
       }
+      case "message_reaction_updated": {
+        if (!authUserId || typeof conversationId !== "string" || typeof payload.message_id !== "string") {
+          return;
+        }
+        const reactionState = deriveReactionState(payload.reactions, authUserId);
+        const normalized = Object.keys(reactionState.normalized).length ? reactionState.normalized : undefined;
+        const summary = reactionState.summary.length ? reactionState.summary : undefined;
+        setChatsState((prev) => {
+          let touched = false;
+          const next = prev.map((chat) => {
+            if (chat.id !== conversationId) return chat;
+            let messageTouched = false;
+            const updatedMessages = chat.messages.map((msg) => {
+              if (msg.id !== payload.message_id) return msg;
+              messageTouched = true;
+              return {
+                ...msg,
+                reactions: normalized,
+                reactionSummary: summary,
+              };
+            });
+            if (!messageTouched) return chat;
+            touched = true;
+            return { ...chat, messages: updatedMessages };
+          });
+          return touched ? next : prev;
+        });
+        break;
+      }
       case "typing_start": {
         updateTypingIndicator(
           conversationId,
@@ -398,6 +430,36 @@ export function useChatMessages(initialChats: Chat[]) {
     })();
   }, [selectedChatId, messageInput, editingMessageId, authUserId]);
 
+  const handleReaction = useCallback((msg: Message, emoji: string) => {
+    if (!authUserId || !emoji) return;
+    const existingReaction = msg.reactionSummary?.find((entry) => entry.reactedByMe)?.emoji ?? null;
+
+    (async () => {
+      try {
+        let updated;
+        if (existingReaction && existingReaction === emoji) {
+          updated = await apiRemoveMessageReaction(msg.id, emoji);
+        } else if (existingReaction && existingReaction !== emoji) {
+          updated = await apiChangeMessageReaction(msg.id, emoji);
+        } else {
+          updated = await apiAddMessageReaction(msg.id, emoji);
+        }
+
+        const mapped = mapBackendToMessage(updated, authUserId);
+        const conversationId = updated.conversation_id;
+        setChatsState((prev) =>
+          prev.map((chat) =>
+            chat.id === conversationId
+              ? { ...chat, messages: chat.messages.map((m) => (m.id === mapped.id ? mapped : m)) }
+              : chat
+          )
+        );
+      } catch (error) {
+        console.warn("Failed to update reaction", error);
+      }
+    })();
+  }, [authUserId]);
+
   const handleDelete = useCallback((msg: Message) => {
     if (!selectedChatId || !authUserId) return;
     (async () => {
@@ -435,6 +497,7 @@ export function useChatMessages(initialChats: Chat[]) {
     setEditingMessageId,
     handleEditStart,
     handleSend,
+    handleReaction,
     handleDelete,
     typingParticipants,
   } as const;

@@ -31,7 +31,7 @@ function mapUser(apiUser: AuthResult['user']): SessionUser {
     displayName: apiUser.display_name ?? undefined,
     avatarUrl: apiUser.avatar_url ?? undefined,
     provider: apiUser.provider ?? undefined,
-    providerSub: apiUser.provider_sub ?? undefined,
+    providerSub: apiUser.provider_id ?? undefined,
     createdAt: apiUser.created_at ?? undefined,
     updatedAt: apiUser.updated_at ?? undefined,
   };

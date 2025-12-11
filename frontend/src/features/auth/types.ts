@@ -4,7 +4,7 @@ export type ApiUser = {
   display_name?: string | null;
   avatar_url?: string | null;
   provider?: string | null;
-  provider_sub?: string | null;
+  provider_id?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 };

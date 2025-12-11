@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.db.dependencies import get_db
 from app.schemas.auth import UserResponse
-from app.services.auth import get_current_user
+from app.services.auth import get_current_user 
 from typing import Annotated
 
 router = APIRouter()

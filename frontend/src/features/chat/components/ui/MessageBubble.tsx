@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Pencil, Trash2, Info, SmilePlus } from "lucide-react";
 
-const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "🔥", "👏"]; // quick shortcuts similar to WhatsApp
+const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "🔥", "👏"]; 
 
 type MessageBubbleProps = {
   message: Message;
@@ -163,7 +163,7 @@ function MessageBubbleComponent({ message, onEdit, onDelete, onReact }: MessageB
               aria-pressed={reaction.reactedByMe}
             >
               <span>{reaction.emoji}</span>
-              <span>{reaction.count}</span>
+              {/* <span>{reaction.count}</span> */}
             </button>
           ))}
         </div>

@@ -131,6 +131,8 @@ export type ConversationSummary = {
   id: string;
   friendId: string;
   friendName: string;
+  participantIds?: string[];
+  participantNames?: string[];
   friendAvatar?: string | null;
   friendProvider?: string | null;
   lastMessage: string;

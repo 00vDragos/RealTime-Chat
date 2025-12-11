@@ -132,3 +132,8 @@ class ConversationRepository:
             if part_ids == target_set:
                 return conv
         return None
+
+    async def get_conversation_by_id(self, conversation_id: UUID):
+        """Return the Conversations row for the given id, or None."""
+        stmt = select(Conversations).where(Conversations.id == conversation_id)
+        return (await self.db.execute(stmt)).scalar_one_or_none()

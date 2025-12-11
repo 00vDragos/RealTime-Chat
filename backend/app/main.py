@@ -29,6 +29,8 @@ from app.routes.auth.current_user import router as current_user_router
 from app.routes.auth.google_callback import router as google_callback_router
 from app.routes.auth.google_url import router as google_url_router
 
+# USER ROUTES
+from app.routes.users.update_avatar import router as update_avatar_router
 # WEBSOCKET ROUTES
 from app.websocket.router import router as websocket_router
 
@@ -74,6 +76,9 @@ app.include_router(refresh_router, tags=["auth"])
 app.include_router(current_user_router, tags=["auth"])
 app.include_router(google_url_router, tags=["auth"])
 app.include_router(google_callback_router, tags=["auth"])
+
+# User routes
+app.include_router(update_avatar_router, tags=["users"])
 
 
 @app.on_event("startup")

@@ -129,14 +129,16 @@ export async function updateLastRead(conversationId: string, userId: string, mes
 // Matches backend response from GET /api/messages/conversations
 export type ConversationSummary = {
   id: string;
-  friendId: string;
+  friendId: string | null;
   friendName: string;
   participantIds?: string[];
   participantNames?: string[];
   friendAvatar?: string | null;
   friendProvider?: string | null;
-  lastMessage: string;
-  lastMessageTime: string; // ISO
+  friendIsOnline?: boolean;
+  friendLastSeen?: string | null;
+  lastMessage: string | null;
+  lastMessageTime: string | null; // ISO
   unreadCount: number;
 };
 
@@ -153,6 +155,19 @@ export async function createConversation(participantIds: string[], userId: strin
     method: 'POST',
     headers: { 'user-id': userId },
     body: JSON.stringify({ participant_ids: participantIds }),
+  });
+}
+
+export async function updateConversation(conversationId: string, payload: { title: string }) {
+  return fetchJson(`/api/messages/conversations/${conversationId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteConversation(conversationId: string) {
+  return fetchJson<{ detail: string }>(`/api/messages/conversations/${conversationId}`, {
+    method: 'DELETE',
   });
 }
 

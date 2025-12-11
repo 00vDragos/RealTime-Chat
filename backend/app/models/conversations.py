@@ -12,6 +12,7 @@ class Conversations(Base):
     type = Column(String, nullable=False)  # 'direct'|'group'
     created_at = Column(TIMESTAMP, nullable=True)
     participants = relationship("ConversationsParticipants", back_populates="conversation", cascade="all, delete-orphan")
+    title = Column(String(255), nullable=True)
     # Denormalized last message fields for fast UI
     last_message_id = Column(PG_UUID(as_uuid=True), ForeignKey("messages.id", ondelete="SET NULL"), nullable=True, index=True)
     last_message_preview = Column(Text, nullable=True)

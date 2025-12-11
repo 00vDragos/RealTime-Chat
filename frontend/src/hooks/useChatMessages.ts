@@ -9,6 +9,8 @@ import {
   addMessageReaction as apiAddMessageReaction,
   changeMessageReaction as apiChangeMessageReaction,
   removeMessageReaction as apiRemoveMessageReaction,
+  updateConversation as apiUpdateConversation,
+  deleteConversation as apiDeleteConversation,
 } from "../lib/api";
 import { mapBackendToMessage, deriveReactionState } from "@/lib/chat/mapBackendToMessage";
 import { useAuthUserId } from "@/features/auth/useAuthSession";
@@ -104,7 +106,10 @@ export function useChatMessages(initialChats: Chat[]) {
 
   const handleRealtimeEvent = useCallback((payload: ChatInboundEvent) => {
     if (!payload || typeof payload.event !== "string") return;
-    const conversationId: string | undefined = typeof payload.conversation_id === "string" ? payload.conversation_id : undefined;
+    const conversationId: string | undefined =
+      "conversation_id" in payload && typeof payload.conversation_id === "string"
+        ? payload.conversation_id
+        : undefined;
 
     switch (payload.event) {
       case "new_message": {
@@ -237,6 +242,27 @@ export function useChatMessages(initialChats: Chat[]) {
             if (!messageTouched) return chat;
             touched = true;
             return { ...chat, messages: updatedMessages };
+          });
+          return touched ? next : prev;
+        });
+        break;
+      }
+      case "presence_update": {
+        const targetUserId = typeof payload.user_id === "string" ? payload.user_id : null;
+        if (!targetUserId) return;
+        const isOnline = Boolean((payload as { is_online?: unknown }).is_online);
+        const rawLastSeen = (payload as { last_seen?: unknown }).last_seen;
+        const lastSeen = typeof rawLastSeen === "string" ? rawLastSeen : null;
+        setChatsState((prev) => {
+          let touched = false;
+          const next = prev.map((chat) => {
+            if (chat.friendId !== targetUserId) return chat;
+            touched = true;
+            return {
+              ...chat,
+              isOnline,
+              lastSeen: isOnline ? chat.lastSeen : lastSeen ?? chat.lastSeen,
+            };
           });
           return touched ? next : prev;
         });
@@ -486,6 +512,37 @@ export function useChatMessages(initialChats: Chat[]) {
     })();
   }, [selectedChatId, authUserId]);
 
+  const renameConversation = useCallback(async (conversationId: string, newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) {
+      throw new Error("Conversation name cannot be empty");
+    }
+    try {
+      await apiUpdateConversation(conversationId, { title: trimmed });
+      setChatsState((prev) => prev.map((chat) => (chat.id === conversationId ? { ...chat, name: trimmed } : chat)));
+    } catch (error) {
+      console.warn("Failed to rename conversation", error);
+      throw error;
+    }
+  }, []);
+
+  const deleteConversation = useCallback(async (conversationId: string) => {
+    try {
+      await apiDeleteConversation(conversationId);
+      setChatsState((prev) => prev.filter((chat) => chat.id !== conversationId));
+      setTypingMap((prev) => {
+        if (!prev[conversationId]) return prev;
+        const clone = { ...prev };
+        delete clone[conversationId];
+        return clone;
+      });
+      setSelectedChatId((prev) => (prev === conversationId ? null : prev));
+    } catch (error) {
+      console.warn("Failed to delete conversation", error);
+      throw error;
+    }
+  }, []);
+
   return {
     chatsState,
     selectedChatId,
@@ -499,6 +556,8 @@ export function useChatMessages(initialChats: Chat[]) {
     handleSend,
     handleReaction,
     handleDelete,
+    renameConversation,
+    deleteConversation,
     typingParticipants,
   } as const;
 }

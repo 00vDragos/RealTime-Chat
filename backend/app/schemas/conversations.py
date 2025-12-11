@@ -27,10 +27,12 @@ class ConversationRead(ConversationBase):
 
 class ConversationSummary(BaseModel):
     id: uuid.UUID
-    friend_id: uuid.UUID | None = Field(alias="friendId", default=None)
+    friend_id: Optional[uuid.UUID] = Field(alias="friendId", default=None)
     friend_name: str = Field(alias="friendName")
     friend_avatar: str | None = Field(alias="friendAvatar", default=None)
     friend_provider: str | None = Field(alias="friendProvider", default=None)
+    friend_is_online: bool = Field(alias="friendIsOnline", default=False)
+    friend_last_seen: datetime | None = Field(alias="friendLastSeen", default=None)
     last_message: str | None = Field(alias="lastMessage")
     last_message_time: datetime | None = Field(alias="lastMessageTime")
     unread_count: int = Field(alias="unreadCount")

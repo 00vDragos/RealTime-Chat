@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
@@ -72,11 +72,11 @@ class ConversationRepository:
         stmt = select(User).where(User.id == user_id)
         return (await self.db.execute(stmt)).scalars().first()
 
-    async def create_conversation(self, conversation_type: str, participant_ids: list[UUID]):
+    async def create_conversation(self, conversation_type: str, participant_ids: list[UUID], title: str | None = None):
         """
         Create a new conversation with the given participants.
         """
-        new_conversation = Conversations(type=conversation_type)
+        new_conversation = Conversations(type=conversation_type, title=title)
         self.db.add(new_conversation)
         await self.db.flush()  # to get the new conversation ID
 
@@ -137,3 +137,28 @@ class ConversationRepository:
         """Return the Conversations row for the given id, or None."""
         stmt = select(Conversations).where(Conversations.id == conversation_id)
         return (await self.db.execute(stmt)).scalar_one_or_none()
+
+    async def update_conversation_title(self, conversation_id: UUID, title: str):
+        conversation = await self.get_conversation_by_id(conversation_id)
+        if not conversation:
+            return None
+        conversation.title = title
+        await self.db.commit()
+        await self.db.refresh(conversation)
+        return conversation
+
+    async def delete_conversation(self, conversation_id: UUID):
+        # First clear last_read_message_id for participants in this conversation
+        await self.db.execute(
+            update(ConversationsParticipants)
+            .where(ConversationsParticipants.conversation_id == conversation_id)
+            .values(last_read_message_id=None)
+        )
+
+        # Then delete messages, participants, and the conversation itself
+        await self.db.execute(delete(Message).where(Message.conversation_id == conversation_id))
+        await self.db.execute(
+            delete(ConversationsParticipants).where(ConversationsParticipants.conversation_id == conversation_id)
+        )
+        await self.db.execute(delete(Conversations).where(Conversations.id == conversation_id))
+        await self.db.commit()

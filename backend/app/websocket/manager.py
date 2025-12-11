@@ -11,19 +11,30 @@ class ConnectionManager:
     def __init__(self) -> None:
         self.active_connections: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, user_id: str, websocket: WebSocket) -> None:
+    async def connect(self, user_id: str, websocket: WebSocket) -> bool:
         await websocket.accept()
 
+        first_connection = user_id not in self.active_connections or not self.active_connections[user_id]
         if user_id not in self.active_connections:
             self.active_connections[user_id] = []
 
         self.active_connections[user_id].append(websocket)
+        return first_connection
 
-    def disconnect(self, user_id: str, websocket: WebSocket) -> None:
+    def disconnect(self, user_id: str, websocket: WebSocket) -> bool:
         if user_id in self.active_connections:
-            self.active_connections[user_id].remove(websocket)
+            if websocket in self.active_connections[user_id]:
+                self.active_connections[user_id].remove(websocket)
             if not self.active_connections[user_id]:
                 del self.active_connections[user_id]
+                return True
+        return False
+
+    def is_online(self, user_id: str) -> bool:
+        return user_id in self.active_connections and bool(self.active_connections[user_id])
+
+    def connection_count(self, user_id: str) -> int:
+        return len(self.active_connections.get(user_id, []))
 
     async def send_personal_message(self, user_id: str, message: dict) -> None:
         if user_id in self.active_connections:
@@ -44,7 +55,7 @@ class ConnectionManager:
 
 
     async def broadcast(self, user_ids: list[str], message: dict) -> None:
-        for uid in user_ids:
+        for uid in set(user_ids):
             await self.send_personal_message(uid, message)
 
 manager = ConnectionManager()
